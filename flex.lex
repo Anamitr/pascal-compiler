@@ -1,6 +1,7 @@
 %{
 #include <stdlib.h>
 #include "global.h"
+//#include "parser.h"
 
 int tokenval;
 int lineno = 0;
@@ -31,6 +32,11 @@ OR "or"
                     return MULOP;
                 }
 {SIGNS}         {
+                    printf("sign: '%s'\n", yytext);
+                    if (strcmp(yytext,"+") == 0) yylval = PLUS;
+                    if (strcmp(yytext,"-") == 0) yylval = MINUS;
+                    printf("Sign yyval: %d\n", yylval);
+                    printf("PLUS: %d, MINUS: %d\n", PLUS, MINUS);
                     //yylval = decodeSignOp(yytext);
                     return SIGN;
                 }
@@ -85,6 +91,7 @@ OR "or"
 %%
 
 int lookupOrInstall(int typeOfToken) {
+     //printf("Found id %s\n", yytext);
      int p;
      p = symbolTable.lookup(yytext);
      if (p == -1) {

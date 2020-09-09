@@ -2,7 +2,7 @@
 #include "global.h"
 #include <vector>
 
-//std::vector<int> idListHolder;
+std::list<int> idsTempList;
 //std::vector<std::tuple<int, std::vector<int>, array_declaration_holder>> paramListHolder;
 //std::vector<int> expressionListHolder;
 //array_declaration_holder arrayDeclarationHolder;
@@ -43,6 +43,8 @@
 %token END_TOKEN
 %token PROGRAM_TOKEN
 
+%token PLUS
+%token MINUS
 %token OR_OP
 
 
@@ -51,12 +53,15 @@
 program:
 PROGRAM_TOKEN ID '(' identifier_list ')'
  ';' {
-	printf("program");
+	//printf("program\n");
+	emitter.emitString("\tjump.i	#lab0");
+	idsTempList.clear();
 }
 
 declarations
 subprogram_declarations {
 
+	emitter.emitString("#lab0:");
 }
 compound_statement
 '.' {
@@ -64,12 +69,17 @@ compound_statement
 }
 
 identifier_list:
-ID {}
-| identifier_list ',' ID {}
+ID {
+	idsTempList.push_back($1);
+}
+| identifier_list ',' ID {
+	idsTempList.push_back($3);
+}
 
 declarations:
 declarations VAR identifier_list ':' type ';' {
-
+	symbolTable.addGlobalVariablesWithType(idsTempList, $5);
+	idsTempList.clear();
 }
 | %empty
 
@@ -80,8 +90,8 @@ standard_type {}
 }
 
 standard_type:
-INTEGER {}
-| REAL {}
+INTEGER
+| REAL
 
 subprogram_declarations:
 subprogram_declarations subprogram_declaration ';' {
@@ -183,7 +193,9 @@ simple_expression:
 term {}
 | SIGN term
 | simple_expression SIGN term {
-
+	printf("simple_expression: %d %d %d\n", $1, $2, $3);
+	if ($2 == PLUS) printf("plusss\n");
+	emitter.generateOperation($2, $1, $3);
 }
 | simple_expression OR term {
 

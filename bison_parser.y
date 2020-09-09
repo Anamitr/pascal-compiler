@@ -66,7 +66,7 @@ PROGRAM_TOKEN ID '(' identifier_list ')'
 declarations
 subprogram_declarations {
 
-	emitter.emitString("#lab0:");
+	emitter.emitString("lab0:");
 }
 compound_statement
 '.' {

@@ -1,6 +1,8 @@
 make clean ; make &&
-./pascal-compiler testing/exp_pas/t0.pas &&
-cat out.asm
+./pascal-compiler testing/exp_pas/t0.pas testing/mine_out/t0.asm &&
+
+cd testing/mine_out
+cat t0.asm
 
 # TODO: straighten headers
 

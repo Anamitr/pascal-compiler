@@ -15,20 +15,41 @@ int SymbolTable::lookup(const string name) {
 
 int SymbolTable::insert(const string name, int typeOfToken) {
     Entry entry = Entry();
-    entry.type = typeOfToken;
+    entry.typeCode = typeOfToken;
     entry.name = name;
+    int p = entries.size();
+    entry.indexInSymbolTable = p;
     entries.push_back(entry);
-    int p = entries.size() - 1;
-    cout << "Added entry with name " << name << " and type " << typeOfToken
-         << " at position " << p << endl;
-
+    cout << "Added entry with name " << name << " and typeCode " << typeOfToken
+         << " at index " << p << endl;
     return p;
 }
 
-void SymbolTable::addGlobalVariablesWithType(list<int> idList, int type) {
+void SymbolTable::addGlobalVariablesWithType(list<int> idList, int typeCode) {
+    string idsMsg = "";
+    idsMsg.append("SymbolTable::addGlobalVariablesWithType idList: ");
     for (int id : idList) {
-        cout << id << ", ";
+        idsMsg.append(to_string(id) + ", ");
+        entries[id].typeCode = typeCode;
+        entries[id].typeChar = Decoder::getShortTypeSignFromCode(typeCode);
+        entries[id].positionInMemory = freeMemoryPointer;
+        cout << "Variable " << entries[id].name << " allocated at " << freeMemoryPointer << endl;
+        freeMemoryPointer += Decoder::getVarTypeSize(typeCode);
     }
-    cout << endl;
+    idsMsg.append("\n");
+    cout << idsMsg;
 //    cout << "ids: " << idList << endl;
+}
+
+
+Entry SymbolTable::getEntryByIndex(int index) {
+    return entries[index];
+}
+
+Entry SymbolTable::allocateTempVarOfType(int typeCode) {
+    int p = this->insert("t" + to_string(tempVarCounter++), ID);
+    list<int> ids;
+    ids.push_back(p);
+    addGlobalVariablesWithType(ids, typeCode);
+    return this->getEntryByIndex(p);
 }

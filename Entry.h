@@ -6,9 +6,12 @@ using namespace std;
 
 class Entry {
 public:
-    int position;
+    int indexInSymbolTable;
+    int positionInMemory;
+    int typeCode;
+
     string name;
-    int type;
+    string typeChar;
 
     bool isVariable = false;
 };

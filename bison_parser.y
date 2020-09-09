@@ -43,10 +43,13 @@ std::list<int> idsTempList;
 %token END_TOKEN
 %token PROGRAM_TOKEN
 
+/* Not needed by bison, but elsewhere*/
 %token PLUS
 %token MINUS
 %token OR_OP
+%token INT_TO_REAL
 
+%token UNKOWN
 
 
 %%
@@ -86,12 +89,12 @@ declarations VAR identifier_list ':' type ';' {
 type:
 standard_type {}
 | ARRAY '[' NUM RANGEOP NUM ']' OF standard_type {
-
+	printf("Arrays not supported!");
 }
 
 standard_type:
-INTEGER
-| REAL
+INTEGER {}
+| REAL {}
 
 subprogram_declarations:
 subprogram_declarations subprogram_declaration ';' {
@@ -138,7 +141,8 @@ statement
 
 statement:
 variable ASSIGNOP expression {
-
+	emitter.generateAssignOperation(symbolTable.getEntryByIndex($1),
+		symbolTable.getEntryByIndex($3));
 }
 | procedure_statement {
 
@@ -172,6 +176,9 @@ ID {
 
 }
 | ID '(' expression_list ')' {
+//	if(symbolTable.getEntryByIndex(ID) == "write") {
+//		printf("write");
+//	}
 
 }
 
@@ -195,7 +202,9 @@ term {}
 | simple_expression SIGN term {
 	printf("simple_expression: %d %d %d\n", $1, $2, $3);
 	if ($2 == PLUS) printf("plusss\n");
-	emitter.generateOperation($2, $1, $3);
+	int resultIndex = emitter.generateSignOperation($2, $1, $3);
+	printf("resultIndex %d\n", resultIndex);
+	$$ = resultIndex;
 }
 | simple_expression OR term {
 

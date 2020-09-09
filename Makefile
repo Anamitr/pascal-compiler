@@ -2,11 +2,11 @@ COMPILER=g++
 OUTPUT_PROGRAM_NAME=pascal-compiler
 
 $(OUTPUT_PROGRAM_NAME) : main.o flex.o parser.o SymbolTable.o Emitter.o Decoder.o \
-	# emitter.o error.o init.o \
-#	 symbol.o
+	# emitter.o error.o init.o symbol.o \
+
 	$(COMPILER) -o $(OUTPUT_PROGRAM_NAME) main.o flex.o parser.o SymbolTable.o Emitter.o Decoder.o \
-#     emitter.o error.o init.o \
-#	 symbol.o
+	# emitter.o error.o init.o symbol.o \
+
 
 main.o : main.cpp global.h parser.h
 	$(COMPILER) -c main.cpp

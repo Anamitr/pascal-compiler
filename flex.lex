@@ -65,8 +65,8 @@ OR "or"
 "array"         {return ARRAY;}
 "of"            {return OF;}
 
-"integer"       {return INTEGER;}
-"real"          {return REAL;}
+"integer"       {yylval = INTEGER; return INTEGER;}
+"real"          {yylval = REAL; return REAL;}
 
 "procedure"     {return PROCEDURE;}
 "function"      {return FUNCTION;}

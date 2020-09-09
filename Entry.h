@@ -14,4 +14,6 @@ public:
     string typeChar;
 
     bool isVariable = false;
+
+//    string getName() { return name;}
 };

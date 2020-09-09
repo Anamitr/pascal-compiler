@@ -10,6 +10,8 @@ int main(int argc, char** argv) {
     }
     yyin = input;
     yyparse();
-    emitter.writeToFile("out.asm");
+//    FILE *output = fopen(argv[1], "r");
+
+    emitter.writeToFile(argv[2]);
     exit (0);
 }

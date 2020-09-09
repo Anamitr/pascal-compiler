@@ -1,6 +1,8 @@
 %{
 #include "global.h"
 #include <vector>
+#include "Entry.h"
+#include <string.h>
 
 std::list<int> idsTempList;
 //std::vector<std::tuple<int, std::vector<int>, array_declaration_holder>> paramListHolder;
@@ -68,7 +70,7 @@ subprogram_declarations {
 }
 compound_statement
 '.' {
-
+	emitter.emitString("\texit");
 }
 
 identifier_list:
@@ -176,9 +178,15 @@ ID {
 
 }
 | ID '(' expression_list ')' {
-//	if(symbolTable.getEntryByIndex(ID) == "write") {
-//		printf("write");
-//	}
+//	Entry e1;
+//	e1.name = "dfsgdfsgdfsg";
+////	printf("%s\n", e1.getName());
+//	printf("Found function: %s\n", symbolTable.getEntryNameByIndex($1).c_str());
+	printf("Found function: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
+	if(strcmp(symbolTable.getEntryByIndex($1).name.c_str(), "write") == 0) {
+		printf("writeeee\n");
+		emitter.emitWrite(symbolTable.getEntryByIndex($3));
+	}
 
 }
 
@@ -191,13 +199,13 @@ expression {
 }
 
 expression:
-simple_expression {}
+simple_expression {$$ = $1;}
 | simple_expression RELOP simple_expression {
 
 }
 
 simple_expression:
-term {}
+term {$$ = $1;}
 | SIGN term
 | simple_expression SIGN term {
 	printf("simple_expression: %d %d %d\n", $1, $2, $3);
@@ -211,7 +219,7 @@ term {}
 }
 
 term:
-factor {}
+factor {$$ = $1;}
 | term MULOP factor {
 
 }

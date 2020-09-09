@@ -8,6 +8,7 @@
 #include "parser.h"
 #include "SymbolTable.h"
 #include "Emitter.h"
+#include "Entry.h"
 
 using namespace std;
 

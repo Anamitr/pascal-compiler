@@ -12,6 +12,7 @@ public:
 
     Entry getEntryByIndex(int index);
     Entry allocateTempVarOfType(int typeCode);
+//    string getEntryNameByIndex(int index);
 
     void addGlobalVariablesWithType(list<int> idList, int typeCode);
 

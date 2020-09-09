@@ -53,3 +53,8 @@ Entry SymbolTable::allocateTempVarOfType(int typeCode) {
     addGlobalVariablesWithType(ids, typeCode);
     return this->getEntryByIndex(p);
 }
+
+//string SymbolTable::getEntryNameByIndex(int index) {
+//    cout << "SymbolTable::getEntryNameByIndex: " << entries[index].name << endl;
+//    return entries[index].name;
+//}

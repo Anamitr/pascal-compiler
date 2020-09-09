@@ -13,6 +13,8 @@ public:
     int generateAssignOperation(Entry leftEntry, Entry rightEntry);
     Entry generateConversion(int conversionCode, Entry varToConvert);
 
+    void emitWrite(Entry varToWrite);
+
     void writeToFile(string outputFileName);
 
 private:

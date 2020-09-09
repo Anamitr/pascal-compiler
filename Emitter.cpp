@@ -52,7 +52,7 @@ int Emitter::generateAssignOperation(Entry leftEntry, Entry rightEntry) {
     string command = "\t";
     command.append("mov." + leftEntry.typeChar + "\t");
     command.append(to_string(entryToAssign.positionInMemory) + ",");
-    command.append(to_string(leftEntry.positionInMemory) + "\n");
+    command.append(to_string(leftEntry.positionInMemory));
     this->emitString(command);
 }
 
@@ -66,4 +66,10 @@ Entry Emitter::generateConversion(int conversionCode, Entry varToConvert) {
     command.append(to_string(resultEntry.positionInMemory));
     this->emitString(command);
     return resultEntry;
+}
+
+void Emitter::emitWrite(Entry varToWrite) {
+    string command = "\t";
+    command.append("write." + varToWrite.typeChar + "\t" + to_string(varToWrite.positionInMemory));
+    this->emitString(command);
 }

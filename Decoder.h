@@ -13,5 +13,6 @@ public:
     static string getConversionStringFromCode(int conversionCode);
     static int getConversionResultType(int conversionCode);
     static int getConversionCodeFromEntriesTypes(int oldType, int newType);
+    static string getTokenTypeStringFromCode(int tokenTypeCode);
 };
 

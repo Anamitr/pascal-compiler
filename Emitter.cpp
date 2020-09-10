@@ -47,15 +47,21 @@ int Emitter::generateAssignOperation(Entry leftEntry, Entry rightEntry) {
 
     if (leftEntry.typeCode != rightEntry.typeCode) {
         Entry convertedRightEntry = generateConversion(
-                Decoder::getConversionCodeFromEntriesTypes(rightEntry.typeCode, leftEntry.typeCode),
-                rightEntry);
+                Decoder::getConversionCodeFromEntriesTypes(rightEntry.typeCode,
+                                                           leftEntry.typeCode), rightEntry);
         entryToAssign = convertedRightEntry;
     }
     cout << "Assign vars: " << leftEntry.name << " := " << entryToAssign.name << endl;
+    string assignValue = entryToAssign.isConstant ? "#" + entryToAssign.name :
+            entryToAssign.getPosInMemString();
+    if (rightEntry.isConstant) {
+//        cout << "-------- rightEntry.isConstant" << endl;
+    }
     string command = "\t";
     command.append("mov." + leftEntry.typeChar + "\t");
-    command.append(to_string(entryToAssign.positionInMemory) + ",");
-    command.append(to_string(leftEntry.positionInMemory));
+//    command.append(entryToAssign.getPosInMemString() + ",");
+    command.append(assignValue + ",");
+    command.append(leftEntry.getPosInMemString());
     this->emitString(command);
 }
 
@@ -81,8 +87,6 @@ vector<Entry> Emitter::convertToSameType(Entry leftEntry, Entry rightEntry) {
     vector<Entry> result;
     if (leftEntry.typeCode == rightEntry.typeCode) {
         cout << "Emitter::convertToSameType: Entries are the same type!";
-//        result.push_back(leftEntry);
-//        result.push_back(rightEntry);
     } else if (leftEntry.typeCode == INTEGER && rightEntry.typeCode == REAL) {
         int conversionCode = INT_TO_REAL;
         leftEntry = generateConversion(conversionCode, leftEntry);
@@ -105,6 +109,9 @@ void Emitter::emitSubprogramStart(Entry subprogramEntry) {
         command.append("\tenter.i\t#$" + subprogramEntry.name + "allocSize");
         this->emitString(command);
     }
+    if (subprogramEntry.isFunction) {
+        symbolTable.allocateFunReturnVariable(subprogramEntry);
+    }
 }
 
 void Emitter::emitSubprogramLeave() {
@@ -119,7 +126,11 @@ void Emitter::setSubprogramMemAllocSize() {
             symbolTable.currentlyProcessedSubprogramIndex);
     string subProgramMemAllocSizeVar = "$" + subprogramEntry.name + "allocSize";
     replaceInString(output, subProgramMemAllocSizeVar,
-            to_string(subprogramEntry.memAllocSize));
+                    to_string(subprogramEntry.memAllocSize));
+}
+
+void Emitter::callProcedure(const Entry &subprogramEntry) {
+    string command = "call.i\t#" + subprogramEntry.name;
 }
 
 //Entry Emitter::generateMulOperation(Entry leftEntry, Entry rightEntry) {

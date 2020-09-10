@@ -5,7 +5,7 @@
 
 int tokenval;
 int lineno = 0;
-int lookupOrInstall(int typeOfToken);
+int lookupOrInstall(int typeOfToken, int typeCode);
 %}
 
 %option noyywrap
@@ -83,26 +83,27 @@ OR "or"
 "program"       {return PROGRAM_TOKEN;}
 
 {letter}({letter}|{digit})* {
-                     return lookupOrInstall(ID);
+                     return lookupOrInstall(ID, -1);
                 }
 {digit}+"."{digit}+ {
-                    return lookupOrInstall(REAL);
+                    lookupOrInstall(NUM, REAL);
                     return NUM;
 }
 
 {digit}+ {
-                    return lookupOrInstall(INTEGER);
+                    lookupOrInstall(NUM, INTEGER);
+                    printf("flex: found integer: %s\n", yytext);
                     return NUM;
 }
 .               {return (int) yytext[0];}
 %%
 
-int lookupOrInstall(int typeOfToken) {
+int lookupOrInstall(int typeOfToken, int typeCode) {
      //printf("Found id %s\n", yytext);
      int p;
      p = symbolTable.lookup(yytext);
      if (p == -1) {
-        p = symbolTable.insert(yytext, ID);
+        p = symbolTable.insert(yytext, typeOfToken, typeCode);
      }
      yylval = p;
      return typeOfToken;

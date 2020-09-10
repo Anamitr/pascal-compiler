@@ -2,16 +2,19 @@ COMPILER=g++
 OUTPUT_PROGRAM_NAME=pascal-compiler
 
 $(OUTPUT_PROGRAM_NAME) : main.o flex.o parser.o SymbolTable.o Emitter.o Decoder.o \
-		util.o
+		util.o Entry.o
 	# emitter.o error.o init.o symbol.o \
 
 	$(COMPILER) -o $(OUTPUT_PROGRAM_NAME) main.o flex.o parser.o SymbolTable.o \
- 		Emitter.o Decoder.o util.o
+ 		Emitter.o Decoder.o util.o Entry.o
 	# emitter.o error.o init.o symbol.o \
 
 
 main.o : main.cpp global.h parser.h
 	$(COMPILER) -c main.cpp
+
+Entry.o : Entry.cpp Entry.h global.h
+	$(COMPILER) -c Entry.cpp Entry.h global.h
 
 util.o : util.cpp util.h global.h
 	$(COMPILER) -c util.cpp util.h global.h
@@ -21,9 +24,6 @@ Decoder.o : Decoder.cpp Decoder.h global.h
 
 Emitter.o : Emitter.cpp Emitter.h global.h
 	$(COMPILER) -c Emitter.cpp Emitter.h global.h
-
-Entry.o : Entry.cpp Entry.h global.h
-	$(COMPILER) -c Entry.cpp Entry.h global.h
 
 parser.c parser.h : bison_parser.y
 	bison --defines=parser.h -o parser.c bison_parser.y

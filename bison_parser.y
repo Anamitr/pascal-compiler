@@ -72,7 +72,6 @@ PROGRAM_TOKEN ID '(' identifier_list ')'
 
 declarations
 subprogram_declarations {
-
 	emitter.emitString("lab0:");
 }
 compound_statement
@@ -117,14 +116,17 @@ subprogram_head declarations compound_statement
 
 subprogram_head:
 FUNCTION ID arguments ':' standard_type ';' {
-
+	Entry& functionEntry = symbolTable.getEntryByIndex($2);
+	functionEntry.isFunction = true;
+	symbolTable.assignVariableItsType(functionEntry, $5);
+	symbolTable.allocateFunReturnVariable(functionEntry);
+	emitter.emitSubprogramStart(functionEntry);
+	symbolTable.currentlyProcessedSubprogramIndex =
+		functionEntry.indexInSymbolTable;
 }
 | PROCEDURE ID arguments ';' {
-//	emitter.emitSubprogramLabel();
 	Entry& procedureEntry = symbolTable.getEntryByIndex($2);
 	procedureEntry.isProcedure = true;
-//	printf("entry.isProcedure: %d\n", entry.isProcedure);
-//	printf("entry2.isProcedure: %d\n", symbolTable.getEntryByIndex($2).isProcedure);
 	emitter.emitSubprogramStart(procedureEntry);
 	symbolTable.currentlyProcessedSubprogramIndex =
 		procedureEntry.indexInSymbolTable;
@@ -194,9 +196,12 @@ ID {
 
 }
 | ID '(' expression_list ')' {
-	printf("Found function: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
-	if(strcmp(symbolTable.getEntryByIndex($1).name.c_str(), "write") == 0) {
+	printf("Found subprogram: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
+	Entry& subprogramEntry = symbolTable.getEntryByIndex($1);
+	if(strcmp(subprogramEntry.name.c_str(), "write") == 0) {
 		emitter.emitWrite(symbolTable.getEntryByIndex($3));
+	} else if (subprogramEntry.isProcedure == true) {
+		emitter.callProcedure(subprogramEntry);
 	}
 
 }
@@ -247,7 +252,9 @@ variable {
 | ID '(' expression_list ')' {
 
 }
-| NUM {}
+| NUM {
+//	printf("Found NUM: %d\n", $1);
+}
 | '(' expression ')' {}
 | NOT factor {}
 %%

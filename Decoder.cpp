@@ -72,3 +72,15 @@ int Decoder::getConversionCodeFromEntriesTypes(int oldType, int newType) {
         exit(-1);
     }
 }
+
+string Decoder::getTokenTypeStringFromCode(int tokenTypeCode) {
+    switch (tokenTypeCode) {
+        case ID:
+            return "ID";
+        case NUM:
+            return "NUM";
+        default:
+            cout << "No such tokenTypeCode: " << tokenTypeCode << "!\n";
+            exit(-1);
+    }
+}

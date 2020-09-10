@@ -2,9 +2,11 @@
 
 #include "global.h"
 #include "Decoder.h"
-#include "Entry.h"
+//#include "Entry.h"
 
 using namespace std;
+
+class Entry;
 
 class Emitter {
 public:
@@ -19,6 +21,7 @@ public:
     void emitSubprogramStart(Entry subprogramEntry);
     void emitSubprogramLeave();
     void setSubprogramMemAllocSize();
+    void callProcedure(const Entry& subprogramEntry);
 
     void writeToFile(string outputFileName);
 

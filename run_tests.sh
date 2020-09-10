@@ -9,7 +9,9 @@ function compile_and_test () {
 
   for prog in "${arr[@]}";
   do
-#    cat testing/mine_out/$prog.asm
+    if [ "$should_print_output" = true ] ; then
+      cat testing/mine_out/$prog.asm
+    fi
     mt0=`cat testing/mine_out/$prog.asm | awk -F';' '{print $1}' | tr -d '[:space:]'`
     gt0=`cat testing/gj_out/$prog.asm | awk -F';' '{print $1}' | tr -d '[:space:]'`
     if [ $mt0 = $gt0 ]; then
@@ -20,8 +22,10 @@ function compile_and_test () {
   done
 }
 
-programArray=(t0 t1 t2)
-#programArray=(t2)
+#programArray=(t0 t1 t2 t3)
+programArray=(t3)
+#should_print_output=false
+should_print_output=true
 
 make clean ; make
 printf "\nTests:\n"

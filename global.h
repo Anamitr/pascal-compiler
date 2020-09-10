@@ -15,6 +15,7 @@ using namespace std;
 
 class SymbolTable;
 class Emitter;
+class Entry;
 
 extern FILE *yyin, *yyout;
 extern int yyparse (void);

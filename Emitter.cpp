@@ -95,6 +95,33 @@ vector<Entry> Emitter::convertToSameType(Entry leftEntry, Entry rightEntry) {
     return result;
 }
 
+// "$" + subprogramEntry.name + "allocSize"     - will be put subprogram alloc size later
+void Emitter::emitSubprogramStart(Entry subprogramEntry) {
+    if (subprogramEntry.isProcedure == false && subprogramEntry.isFunction == false) {
+        cout << "Emitter::emitSubprogramStart: entry is neither procedure nor function!";
+        exit(-1);
+    } else {
+        string command = subprogramEntry.name + ":\n";
+        command.append("\tenter.i\t#$" + subprogramEntry.name + "allocSize");
+        this->emitString(command);
+    }
+}
+
+void Emitter::emitSubprogramLeave() {
+    setSubprogramMemAllocSize();
+    string command = "\tleave\n\treturn";
+    this->emitString(command);
+}
+
+void Emitter::setSubprogramMemAllocSize() {
+//    output.replace("$" + subprogramEntry.name + "allocSize", to_string(memAllocSize));
+    Entry subprogramEntry = symbolTable.getEntryByIndex(
+            symbolTable.currentlyProcessedSubprogramIndex);
+    string subProgramMemAllocSizeVar = "$" + subprogramEntry.name + "allocSize";
+    replaceInString(output, subProgramMemAllocSizeVar,
+            to_string(subprogramEntry.memAllocSize));
+}
+
 //Entry Emitter::generateMulOperation(Entry leftEntry, Entry rightEntry) {
 //    return Entry();
 //}

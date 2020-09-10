@@ -16,7 +16,9 @@ public:
     vector<Entry> convertToSameType(Entry leftEntry, Entry rightEntry);
 
     void emitWrite(Entry varToWrite);
-    void emitSubprogramLabel();
+    void emitSubprogramStart(Entry subprogramEntry);
+    void emitSubprogramLeave();
+    void setSubprogramMemAllocSize();
 
     void writeToFile(string outputFileName);
 

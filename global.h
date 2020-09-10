@@ -9,6 +9,7 @@
 #include "SymbolTable.h"
 #include "Emitter.h"
 #include "Entry.h"
+#include "util.h"
 
 using namespace std;
 

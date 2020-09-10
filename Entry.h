@@ -17,5 +17,7 @@ public:
     bool isFunction = false;
     bool isProcedure = false;
 
+    int memAllocSize = 0;
+
 //    string getName() { return name;}
 };

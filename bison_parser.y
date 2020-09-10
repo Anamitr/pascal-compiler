@@ -107,6 +107,8 @@ INTEGER {}
 
 subprogram_declarations:
 subprogram_declarations subprogram_declaration ';' {
+	emitter.emitSubprogramLeave();
+	symbolTable.currentlyProcessedSubprogramIndex = -1;
 }
 | %empty
 
@@ -119,10 +121,13 @@ FUNCTION ID arguments ':' standard_type ';' {
 }
 | PROCEDURE ID arguments ';' {
 //	emitter.emitSubprogramLabel();
-//	Entry entry = symbolTable.getEntryByIndex($2);
-//	entry.isProcedure = true;
+	Entry& procedureEntry = symbolTable.getEntryByIndex($2);
+	procedureEntry.isProcedure = true;
 //	printf("entry.isProcedure: %d\n", entry.isProcedure);
 //	printf("entry2.isProcedure: %d\n", symbolTable.getEntryByIndex($2).isProcedure);
+	emitter.emitSubprogramStart(procedureEntry);
+	symbolTable.currentlyProcessedSubprogramIndex =
+		procedureEntry.indexInSymbolTable;
 }
 
 arguments:

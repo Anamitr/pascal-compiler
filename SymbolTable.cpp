@@ -42,8 +42,8 @@ void SymbolTable::addGlobalVariablesWithType(list<int> idList, int typeCode) {
 }
 
 
-Entry SymbolTable::getEntryByIndex(int index) {
-    return entries[index];
+Entry& SymbolTable::getEntryByIndex(int index) {
+    return entries.at(index);
 }
 
 Entry SymbolTable::allocateTempVarOfType(int typeCode) {

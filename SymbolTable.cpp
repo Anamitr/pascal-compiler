@@ -60,8 +60,8 @@ Entry SymbolTable::allocateTempVarOfType(int typeCode) {
     return this->getEntryByIndex(p);
 }
 
-Entry SymbolTable::allocateFunReturnVariable(Entry& functionEntry) {
-    cout << "SymbolTable::allocateFunReturnVariable: " + functionEntry.name +
+Entry SymbolTable::allocateFunReturnVarPointer(Entry& functionEntry) {
+    cout << "SymbolTable::allocateFunReturnVarPointer: " + functionEntry.name +
             " - " + functionEntry.typeChar << endl;
     functionEntry.BPOffset = BPOffsetPointer;
     BPOffsetPointer += Decoder::getVarTypeSize(functionEntry.typeCode);

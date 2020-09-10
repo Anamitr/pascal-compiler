@@ -15,7 +15,7 @@ public:
     Entry& getEntryByIndex(int index);
     Entry allocateTempVarOfType(int typeCode);
 //    string getEntryNameByIndex(int index);
-    Entry allocateFunReturnVariable(Entry& functionEntry);
+    Entry allocateFunReturnVarPointer(Entry& functionEntry);
 
     void addGlobalVariablesWithType(list<int> indexList, int typeCode);
     void assignVariableItsType(Entry& entry, int typeCode);

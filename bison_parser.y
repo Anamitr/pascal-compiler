@@ -9,6 +9,8 @@ std::list<int> idsTempList;
 //std::vector<int> expressionListHolder;
 //array_declaration_holder arrayDeclarationHolder;
 
+bool isInMain = false;
+
 %}
 
 %debug
@@ -65,7 +67,7 @@ std::list<int> idsTempList;
 program:
 PROGRAM_TOKEN ID '(' identifier_list ')'
  ';' {
-	//printf("program\n");
+	//printf("Bison:\t\tprogram\n");
 	emitter.emitString("\tjump.i	#lab0");
 	idsTempList.clear();
 }
@@ -73,6 +75,7 @@ PROGRAM_TOKEN ID '(' identifier_list ')'
 declarations
 subprogram_declarations {
 	emitter.emitString("lab0:");
+	isInMain = true;
 }
 compound_statement
 '.' {
@@ -97,7 +100,7 @@ declarations VAR identifier_list ':' type ';' {
 type:
 standard_type {}
 | ARRAY '[' NUM RANGEOP NUM ']' OF standard_type {
-	printf("Arrays not supported!");
+	printf("Bison:\t\tArrays not supported!");
 }
 
 standard_type:
@@ -119,7 +122,7 @@ FUNCTION ID arguments ':' standard_type ';' {
 	Entry& functionEntry = symbolTable.getEntryByIndex($2);
 	functionEntry.isFunction = true;
 	symbolTable.assignVariableItsType(functionEntry, $5);
-	symbolTable.allocateFunReturnVariable(functionEntry);
+	symbolTable.allocateFunReturnVarPointer(functionEntry);
 	emitter.emitSubprogramStart(functionEntry);
 	symbolTable.currentlyProcessedSubprogramIndex =
 		functionEntry.indexInSymbolTable;
@@ -193,15 +196,20 @@ ID {}
 
 procedure_statement:
 ID {
-
+	printf("Bison:\t\t\t\tFound subprogram: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
+	Entry subprogramEntry = symbolTable.getEntryByIndex($1);
+	printf("subprogramEntry.isProcedure %d\n", subprogramEntry.isProcedure);
+	if (subprogramEntry.isProcedure) {
+		emitter.callSubprogram(subprogramEntry);
+	}
 }
 | ID '(' expression_list ')' {
-	printf("Found subprogram: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
+	printf("Bison:\t\t\t\tFound subprogram: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
 	Entry& subprogramEntry = symbolTable.getEntryByIndex($1);
 	if(strcmp(subprogramEntry.name.c_str(), "write") == 0) {
 		emitter.emitWrite(symbolTable.getEntryByIndex($3));
 	} else if (subprogramEntry.isProcedure == true) {
-		emitter.callProcedure(subprogramEntry);
+		emitter.callSubprogram(subprogramEntry);
 	}
 
 }
@@ -224,11 +232,11 @@ simple_expression:
 term {$$ = $1;}
 | SIGN term
 | simple_expression SIGN term {
-	printf("simple_expression: %d %d %d\n", $1, $2, $3);
+	printf("Bison:\t\tsimple_expression: %d %d %d\n", $1, $2, $3);
 	Entry leftEntry = symbolTable.getEntryByIndex($1);
 	Entry rightEntry = symbolTable.getEntryByIndex($3);
 	int resultIndex = emitter.generateSignOperation($2, leftEntry, rightEntry);
-	printf("resultIndex %d\n", resultIndex);
+	printf("Bison:\t\tresultIndex %d\n", resultIndex);
 	$$ = resultIndex;
 }
 | simple_expression OR term {
@@ -241,19 +249,23 @@ factor {$$ = $1;}
 	Entry leftEntry = symbolTable.getEntryByIndex($1);
         Entry rightEntry = symbolTable.getEntryByIndex($3);
         int resultIndex = emitter.generateSignOperation($2, leftEntry, rightEntry);
-        //printf("resultIndex %d\n", resultIndex);
+        //printf("Bison:\t\tresultIndex %d\n", resultIndex);
         $$ = resultIndex;
 }
 
 factor:
 variable {
-
+	Entry& subprogramEntry = symbolTable.getEntryByIndex($1);
+	if (subprogramEntry.isProcedure || subprogramEntry.isFunction) {
+		printf("Bison:\t\t\t\tFound subprogram as variable: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
+		$$ = emitter.callSubprogram(subprogramEntry);
+	}
 }
 | ID '(' expression_list ')' {
 
 }
 | NUM {
-//	printf("Found NUM: %d\n", $1);
+//	printf("Bison:\t\tFound NUM: %d\n", $1);
 }
 | '(' expression ')' {}
 | NOT factor {}

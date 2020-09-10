@@ -53,13 +53,9 @@ int Emitter::generateAssignOperation(Entry leftEntry, Entry rightEntry) {
     }
     cout << "Assign vars: " << leftEntry.name << " := " << entryToAssign.name << endl;
     string assignValue = entryToAssign.isConstant ? "#" + entryToAssign.name :
-            entryToAssign.getPosInMemString();
-    if (rightEntry.isConstant) {
-//        cout << "-------- rightEntry.isConstant" << endl;
-    }
+                         entryToAssign.getPosInMemString();
     string command = "\t";
     command.append("mov." + leftEntry.typeChar + "\t");
-//    command.append(entryToAssign.getPosInMemString() + ",");
     command.append(assignValue + ",");
     command.append(leftEntry.getPosInMemString());
     this->emitString(command);
@@ -110,7 +106,7 @@ void Emitter::emitSubprogramStart(Entry subprogramEntry) {
         this->emitString(command);
     }
     if (subprogramEntry.isFunction) {
-        symbolTable.allocateFunReturnVariable(subprogramEntry);
+        symbolTable.allocateFunReturnVarPointer(subprogramEntry);
     }
 }
 
@@ -129,8 +125,23 @@ void Emitter::setSubprogramMemAllocSize() {
                     to_string(subprogramEntry.memAllocSize));
 }
 
-void Emitter::callProcedure(const Entry &subprogramEntry) {
-    string command = "call.i\t#" + subprogramEntry.name;
+int Emitter::callSubprogram(const Entry &subprogramEntry) {
+    cout << "Emitter::callSubprogram\t\t" << "calling subprogram " << subprogramEntry.name << endl;
+    int result = -1;
+    int subprogramStackPointer = 0;
+    if (subprogramEntry.isFunction) {
+        Entry funReturnVar = symbolTable.allocateTempVarOfType(subprogramEntry.typeCode);
+        this->emitString("\tpush.i  #" + funReturnVar.getPosInMemString());
+        subprogramStackPointer++;
+        result = funReturnVar.indexInSymbolTable;
+    }
+    this->emitString("\tcall.i\t#" + subprogramEntry.name);
+    if (subprogramStackPointer != 0) {
+        this->emitString("\tincsp.i\t#" + to_string(subprogramStackPointer *
+                                                    Decoder::getVarTypeSize(INTEGER)));
+    }
+    cout << "Emitter::callSubprogram\t\t" << "result = " << result << endl;
+    return result;
 }
 
 //Entry Emitter::generateMulOperation(Entry leftEntry, Entry rightEntry) {

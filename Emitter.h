@@ -21,7 +21,7 @@ public:
     void emitSubprogramStart(Entry subprogramEntry);
     void emitSubprogramLeave();
     void setSubprogramMemAllocSize();
-    void callProcedure(const Entry& subprogramEntry);
+    int callSubprogram(const Entry& subprogramEntry);
 
     void writeToFile(string outputFileName);
 

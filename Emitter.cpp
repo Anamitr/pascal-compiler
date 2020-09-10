@@ -117,7 +117,6 @@ void Emitter::emitSubprogramLeave() {
 }
 
 void Emitter::setSubprogramMemAllocSize() {
-//    output.replace("$" + subprogramEntry.name + "allocSize", to_string(memAllocSize));
     Entry subprogramEntry = symbolTable.getEntryByIndex(
             symbolTable.currentlyProcessedSubprogramIndex);
     string subProgramMemAllocSizeVar = "$" + subprogramEntry.name + "allocSize";

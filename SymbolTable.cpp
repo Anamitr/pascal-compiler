@@ -39,7 +39,6 @@ void SymbolTable::addGlobalVariablesWithType(list<int> indexList, int typeCode) 
     }
     idsMsg.append("\n");
     cout << idsMsg;
-//    cout << "ids: " << indexList << endl;
 }
 
 

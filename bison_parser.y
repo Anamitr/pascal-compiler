@@ -5,9 +5,6 @@
 #include <string.h>
 
 std::list<int> idsTempList;
-//std::vector<std::tuple<int, std::vector<int>, array_declaration_holder>> paramListHolder;
-//std::vector<int> expressionListHolder;
-//array_declaration_holder arrayDeclarationHolder;
 
 bool isInMain = false;
 

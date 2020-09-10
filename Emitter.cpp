@@ -13,20 +13,25 @@ void Emitter::writeToFile(string outputFileName) {
     outputStream.close();
 }
 
-int Emitter::generateSignOperation(int operationCode, int firstVarIndex, int secondVarIndex) {
+int Emitter::generateSignOperation(int operationCode, Entry leftEntry, Entry rightEntry) {
     string command = "\t";
     string operation = Decoder::decodeSign(operationCode);
     cout << "Got operation: " << operation << endl;
     command.append(operation + ".");
 
-    Entry firstVar = symbolTable.getEntryByIndex(firstVarIndex);
-    Entry secondVar = symbolTable.getEntryByIndex(secondVarIndex);
     int operationVarType = UNKOWN;
-    if (firstVar.typeCode == secondVar.typeCode) {
-        operationVarType = firstVar.typeCode;
+
+    if (leftEntry.typeCode != rightEntry.typeCode) {
+        vector<Entry> convertedEntries = this->convertToSameType(leftEntry, rightEntry);
+        leftEntry = convertedEntries[0];
+        rightEntry = convertedEntries[1];
+    }
+
+    if (leftEntry.typeCode == rightEntry.typeCode) {
+        operationVarType = leftEntry.typeCode;
         command.append(Decoder::getShortTypeSignFromCode(operationVarType) + "\t");
-        command.append(to_string(firstVar.positionInMemory) + ",");
-        command.append(to_string(secondVar.positionInMemory) + ",");
+        command.append(to_string(leftEntry.positionInMemory) + ",");
+        command.append(to_string(rightEntry.positionInMemory) + ",");
         Entry resultEntry = symbolTable.allocateTempVarOfType(operationVarType);
         command.append(to_string(resultEntry.positionInMemory));
         this->emitString(command);
@@ -35,11 +40,9 @@ int Emitter::generateSignOperation(int operationCode, int firstVarIndex, int sec
         // TODO: typeCode conversion
         cout << "Type conversion not implemented" << endl;
     }
-
 }
 
 int Emitter::generateAssignOperation(Entry leftEntry, Entry rightEntry) {
-
     Entry entryToAssign = rightEntry;
 
     if (leftEntry.typeCode != rightEntry.typeCode) {
@@ -73,3 +76,25 @@ void Emitter::emitWrite(Entry varToWrite) {
     command.append("write." + varToWrite.typeChar + "\t" + to_string(varToWrite.positionInMemory));
     this->emitString(command);
 }
+
+vector<Entry> Emitter::convertToSameType(Entry leftEntry, Entry rightEntry) {
+    vector<Entry> result;
+    if (leftEntry.typeCode == rightEntry.typeCode) {
+        cout << "Emitter::convertToSameType: Entries are the same type!";
+//        result.push_back(leftEntry);
+//        result.push_back(rightEntry);
+    } else if (leftEntry.typeCode == INTEGER && rightEntry.typeCode == REAL) {
+        int conversionCode = INT_TO_REAL;
+        leftEntry = generateConversion(conversionCode, leftEntry);
+    } else if (leftEntry.typeCode == REAL && rightEntry.typeCode == INTEGER) {
+        int conversionCode = INT_TO_REAL;
+        rightEntry = generateConversion(conversionCode, rightEntry);
+    }
+    result.push_back(leftEntry);
+    result.push_back(rightEntry);
+    return result;
+}
+
+//Entry Emitter::generateMulOperation(Entry leftEntry, Entry rightEntry) {
+//    return Entry();
+//}

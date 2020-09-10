@@ -20,16 +20,8 @@ function compile_and_test () {
 }
 
 programArray=(t0 t1)
+#programArray=(t2)
 
 make clean ; make
 printf "\nTests:\n"
-
-#printf "%s\n" "${programArray[@]}"
-#cd testing
 compile_and_test "${programArray[@]}"
-
-
-
-
-#cat t0.asm
-

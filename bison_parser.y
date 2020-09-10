@@ -46,8 +46,15 @@ std::list<int> idsTempList;
 %token PROGRAM_TOKEN
 
 /* Not needed by bison, but elsewhere*/
+/* signs */
 %token PLUS
 %token MINUS
+/* mulop's */
+%token MULTIPLICATION
+%token DIVISION
+%token MOD
+%token AND
+
 %token OR_OP
 %token INT_TO_REAL
 
@@ -111,7 +118,11 @@ FUNCTION ID arguments ':' standard_type ';' {
 
 }
 | PROCEDURE ID arguments ';' {
-
+//	emitter.emitSubprogramLabel();
+//	Entry entry = symbolTable.getEntryByIndex($2);
+//	entry.isProcedure = true;
+//	printf("entry.isProcedure: %d\n", entry.isProcedure);
+//	printf("entry2.isProcedure: %d\n", symbolTable.getEntryByIndex($2).isProcedure);
 }
 
 arguments:
@@ -178,13 +189,8 @@ ID {
 
 }
 | ID '(' expression_list ')' {
-//	Entry e1;
-//	e1.name = "dfsgdfsgdfsg";
-////	printf("%s\n", e1.getName());
-//	printf("Found function: %s\n", symbolTable.getEntryNameByIndex($1).c_str());
 	printf("Found function: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
 	if(strcmp(symbolTable.getEntryByIndex($1).name.c_str(), "write") == 0) {
-		printf("writeeee\n");
 		emitter.emitWrite(symbolTable.getEntryByIndex($3));
 	}
 
@@ -209,8 +215,9 @@ term {$$ = $1;}
 | SIGN term
 | simple_expression SIGN term {
 	printf("simple_expression: %d %d %d\n", $1, $2, $3);
-	if ($2 == PLUS) printf("plusss\n");
-	int resultIndex = emitter.generateSignOperation($2, $1, $3);
+	Entry leftEntry = symbolTable.getEntryByIndex($1);
+	Entry rightEntry = symbolTable.getEntryByIndex($3);
+	int resultIndex = emitter.generateSignOperation($2, leftEntry, rightEntry);
 	printf("resultIndex %d\n", resultIndex);
 	$$ = resultIndex;
 }
@@ -221,7 +228,11 @@ term {$$ = $1;}
 term:
 factor {$$ = $1;}
 | term MULOP factor {
-
+	Entry leftEntry = symbolTable.getEntryByIndex($1);
+        Entry rightEntry = symbolTable.getEntryByIndex($3);
+        int resultIndex = emitter.generateSignOperation($2, leftEntry, rightEntry);
+        //printf("resultIndex %d\n", resultIndex);
+        $$ = resultIndex;
 }
 
 factor:

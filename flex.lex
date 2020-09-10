@@ -28,6 +28,13 @@ OR "or"
                     return RELOP;
                 }
 {MULOPS}        {
+                    printf("mulop: '%s'\n", yytext);
+                    if (strcmp(yytext,"*") == 0) yylval = MULTIPLICATION;
+                    if (strcmp(yytext,"/") == 0) yylval = DIVISION;
+                    if (strcmp(yytext,"div") == 0) yylval = DIVISION;
+                    if (strcmp(yytext,"mod") == 0) yylval = MOD;
+                    if (strcmp(yytext,"and") == 0) yylval = AND;
+
                     //yylval = decodeMulOp(yytext);
                     return MULOP;
                 }

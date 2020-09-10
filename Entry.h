@@ -14,6 +14,8 @@ public:
     string typeChar;
 
     bool isVariable = false;
+    bool isFunction = false;
+    bool isProcedure = false;
 
 //    string getName() { return name;}
 };

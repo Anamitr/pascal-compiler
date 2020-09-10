@@ -6,6 +6,14 @@ string Decoder::decodeSign(int signCode) {
             return "add";
         case MINUS:
             return "sub";
+        case MULTIPLICATION:
+            return "mul";
+        case DIVISION:
+            return "div";
+        case MOD:
+            return "mod";
+        case AND:
+            return "and";
         default:
             cout << "No such sign!" << endl;
             exit(-1);

@@ -16,7 +16,7 @@ void Emitter::writeToFile(string outputFileName) {
 int Emitter::generateSignOperation(int operationCode, Entry leftEntry, Entry rightEntry) {
     string command = "\t";
     string operation = Decoder::decodeSign(operationCode);
-    cout << "Got operation: " << operation << endl;
+    cout << "Emitter::generateSignOperation\t\t\t" << "Got operation: " << operation << endl;
     command.append(operation + ".");
 
     int operationVarType = UNKOWN;
@@ -51,7 +51,7 @@ int Emitter::generateAssignOperation(Entry leftEntry, Entry rightEntry) {
                                                            leftEntry.typeCode), rightEntry);
         entryToAssign = convertedRightEntry;
     }
-    cout << "Assign vars: " << leftEntry.name << " := " << entryToAssign.name << endl;
+    cout << "Emitter::generateAssignOperation\t\t" << "assign vars: " << leftEntry.name << " := " << entryToAssign.name << endl;
     string assignValue = entryToAssign.isConstant ? "#" + entryToAssign.name :
                          entryToAssign.getPosInMemString();
     string command = "\t";
@@ -82,7 +82,7 @@ void Emitter::emitWrite(Entry varToWrite) {
 vector<Entry> Emitter::convertToSameType(Entry leftEntry, Entry rightEntry) {
     vector<Entry> result;
     if (leftEntry.typeCode == rightEntry.typeCode) {
-        cout << "Emitter::convertToSameType: Entries are the same type!";
+        cout << "Emitter::convertToSameType\t\t\t" << "entries are the same type!";
     } else if (leftEntry.typeCode == INTEGER && rightEntry.typeCode == REAL) {
         int conversionCode = INT_TO_REAL;
         leftEntry = generateConversion(conversionCode, leftEntry);
@@ -98,7 +98,7 @@ vector<Entry> Emitter::convertToSameType(Entry leftEntry, Entry rightEntry) {
 // "$" + subprogramEntry.name + "allocSize"     - will be put subprogram alloc size later
 void Emitter::emitSubprogramStart(Entry subprogramEntry) {
     if (subprogramEntry.isProcedure == false && subprogramEntry.isFunction == false) {
-        cout << "Emitter::emitSubprogramStart: entry is neither procedure nor function!";
+        cout << "Emitter::emitSubprogramStart\t\t\t" << "entry is neither procedure nor a function!";
         exit(-1);
     } else {
         string command = subprogramEntry.name + ":\n";
@@ -126,7 +126,7 @@ void Emitter::setSubprogramMemAllocSize() {
 }
 
 int Emitter::callSubprogram(const Entry &subprogramEntry) {
-    cout << "Emitter::callSubprogram\t\t" << "calling subprogram " << subprogramEntry.name << endl;
+    cout << "Emitter::callSubprogram\t\t\t\t" << "calling subprogram " << subprogramEntry.name << endl;
     int result = -1;
     int subprogramStackPointer = 0;
     if (subprogramEntry.isFunction) {
@@ -140,7 +140,7 @@ int Emitter::callSubprogram(const Entry &subprogramEntry) {
         this->emitString("\tincsp.i\t#" + to_string(subprogramStackPointer *
                                                     Decoder::getVarTypeSize(INTEGER)));
     }
-    cout << "Emitter::callSubprogram\t\t" << "result = " << result << endl;
+    cout << "Emitter::callSubprogram\t\t\t\t" << "result = " << result << endl;
     return result;
 }
 

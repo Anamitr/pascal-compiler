@@ -67,7 +67,7 @@ bool isInMain = false;
 program:
 PROGRAM_TOKEN ID '(' identifier_list ')'
  ';' {
-	//printf("Bison:\t\tprogram\n");
+	//printf("Bison:\t\t\t\tprogram\n");
 	emitter.emitString("\tjump.i	#lab0");
 	idsTempList.clear();
 }
@@ -100,7 +100,7 @@ declarations VAR identifier_list ':' type ';' {
 type:
 standard_type {}
 | ARRAY '[' NUM RANGEOP NUM ']' OF standard_type {
-	printf("Bison:\t\tArrays not supported!");
+	printf("Bison:\t\t\t\tArrays not supported!");
 }
 
 standard_type:
@@ -196,7 +196,7 @@ ID {}
 
 procedure_statement:
 ID {
-	printf("Bison:\t\t\t\tFound subprogram: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
+	printf("Bison:\t\t\t\t\t\tFound subprogram: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
 	Entry subprogramEntry = symbolTable.getEntryByIndex($1);
 	printf("subprogramEntry.isProcedure %d\n", subprogramEntry.isProcedure);
 	if (subprogramEntry.isProcedure) {
@@ -204,7 +204,7 @@ ID {
 	}
 }
 | ID '(' expression_list ')' {
-	printf("Bison:\t\t\t\tFound subprogram: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
+	printf("Bison:\t\t\t\t\t\tFound subprogram: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
 	Entry& subprogramEntry = symbolTable.getEntryByIndex($1);
 	if(strcmp(subprogramEntry.name.c_str(), "write") == 0) {
 		emitter.emitWrite(symbolTable.getEntryByIndex($3));
@@ -232,11 +232,11 @@ simple_expression:
 term {$$ = $1;}
 | SIGN term
 | simple_expression SIGN term {
-	printf("Bison:\t\tsimple_expression: %d %d %d\n", $1, $2, $3);
+	printf("Bison:\t\t\t\tsimple_expression: %d %d %d\n", $1, $2, $3);
 	Entry leftEntry = symbolTable.getEntryByIndex($1);
 	Entry rightEntry = symbolTable.getEntryByIndex($3);
 	int resultIndex = emitter.generateSignOperation($2, leftEntry, rightEntry);
-	printf("Bison:\t\tresultIndex %d\n", resultIndex);
+	printf("Bison:\t\t\t\tresultIndex %d\n", resultIndex);
 	$$ = resultIndex;
 }
 | simple_expression OR term {
@@ -249,7 +249,7 @@ factor {$$ = $1;}
 	Entry leftEntry = symbolTable.getEntryByIndex($1);
         Entry rightEntry = symbolTable.getEntryByIndex($3);
         int resultIndex = emitter.generateSignOperation($2, leftEntry, rightEntry);
-        //printf("Bison:\t\tresultIndex %d\n", resultIndex);
+        //printf("Bison:\t\t\t\tresultIndex %d\n", resultIndex);
         $$ = resultIndex;
 }
 
@@ -257,7 +257,7 @@ factor:
 variable {
 	Entry& subprogramEntry = symbolTable.getEntryByIndex($1);
 	if (subprogramEntry.isProcedure || subprogramEntry.isFunction) {
-		printf("Bison:\t\t\t\tFound subprogram as variable: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
+		printf("Bison:\t\t\t\t\t\tFound subprogram as variable: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
 		$$ = emitter.callSubprogram(subprogramEntry);
 	}
 }
@@ -265,7 +265,7 @@ variable {
 
 }
 | NUM {
-//	printf("Bison:\t\tFound NUM: %d\n", $1);
+//	printf("Bison:\t\t\t\tFound NUM: %d\n", $1);
 }
 | '(' expression ')' {}
 | NOT factor {}

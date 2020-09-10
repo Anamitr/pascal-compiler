@@ -22,10 +22,10 @@ function compile_and_test () {
   done
 }
 
-programArray=(t0 t1 t2 t3)
-#programArray=(t3)
-should_print_output=false
-#should_print_output=true
+#programArray=(t0 t1 t2 t3)
+programArray=(t3)
+#should_print_output=false
+should_print_output=true
 
 make clean ; make
 printf "\nTests:\n"

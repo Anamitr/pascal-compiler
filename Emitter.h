@@ -22,6 +22,9 @@ public:
     void setSubprogramMemAllocSize();
     int callSubprogram(Entry& subprogramEntry, const list<int>& callArguments);
     int callSubprogram(Entry& subprogramEntry);
+    int generateRelop(int relopCode, Entry& leftEntry, Entry& rightEntry);
+    void generateJump(int labelNumber);
+    void generateLabel(int labelNumber);
 
     void writePointerAddresses();
     void writeToFile(string outputFileName);

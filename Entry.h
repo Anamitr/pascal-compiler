@@ -14,7 +14,7 @@ public:
     int positionInMemory = -1;
     int BPOffset = -9999;
 
-    string name;
+    string name;        // name may be subprogram, variable name or literal value
     string typeChar;
     string posInMemoryString;
 
@@ -34,4 +34,5 @@ public:
     void assignType(int typeCode);
 
     friend ostream &operator<<(ostream &os, const Entry &entry);
+    string getNameWithTypeString();
 };

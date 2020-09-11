@@ -42,15 +42,18 @@ int Emitter::generateSignOperation(int operationCode, Entry leftEntry, Entry rig
 
 int Emitter::generateAssignOperation(Entry leftEntry, Entry rightEntry) {
     Entry entryToAssign = rightEntry;
+    cout << "Emitter::generateAssignOperation\t\t" << "assign vars: "
+         << leftEntry.getNameWithTypeString() << " := " << entryToAssign.name << endl;
 
     if (leftEntry.typeCode != rightEntry.typeCode) {
+        cout << "Emitter::generateAssignOperation\t\t" << "need to convert "
+             << rightEntry.getNameWithTypeString() << " to " << leftEntry.typeChar << endl;
         Entry convertedRightEntry = generateConversion(
                 Decoder::getConversionCodeFromEntriesTypes(rightEntry.typeCode,
                                                            leftEntry.typeCode), rightEntry);
         entryToAssign = convertedRightEntry;
     }
-    cout << "Emitter::generateAssignOperation\t\t" << "assign vars: " << leftEntry.name
-         << " := " << entryToAssign.name << endl;
+
     string assignValue = entryToAssign.isConstant ? "#" + entryToAssign.name :
                          entryToAssign.getPosInMemString();
     string command = "\t";
@@ -190,3 +193,36 @@ void Emitter::writePointerAddresses() {
                         pointerEntry.posInMemoryString);
     }
 }
+
+// returns entry index where operation result is stored
+int Emitter::generateRelop(int relopCode, Entry &leftEntry, Entry &rightEntry) {
+    string relopCommand = Decoder::getRelopCommandStringFromCode(relopCode);
+    cout << "Emitter::generateRelop\t\t\t\t" << "Got operation: " << relopCommand
+         << " between " << leftEntry.name << "(" << leftEntry.typeChar << ") and "
+         << rightEntry.name << "(" << rightEntry.typeChar << ")" << endl;
+    //TODO: What type relop command should be?
+    string command = "\t" + relopCommand + "." + leftEntry.typeChar + "\t";
+    command += leftEntry.getPosInMemString() + "," + rightEntry.getPosInMemString() + ",";
+    int firstLabelNum = symbolTable.labelCounter++;
+    command += "#lab" + to_string(firstLabelNum);
+    Entry resultEntry = symbolTable.allocateTempVarOfType(INTEGER);
+//    Entry stubZeroEntry = getStubLiteralEntry("0");
+    this->emitString(command);
+    generateAssignOperation(resultEntry, getStubLiteralEntry("0", INTEGER));
+    int secondLabelNum = symbolTable.labelCounter++;
+    this->generateJump(secondLabelNum);
+    this->generateLabel(firstLabelNum);
+    this->generateAssignOperation(resultEntry, getStubLiteralEntry("1", INTEGER));
+    this->generateLabel(secondLabelNum);
+    return resultEntry.indexInSymbolTable;
+}
+
+void Emitter::generateJump(int labelNumber) {
+    this->emitString("\tjump.i\t#lab" + to_string(labelNumber));
+}
+
+void Emitter::generateLabel(int labelNumber) {
+    this->emitString("lab" + to_string(labelNumber) + ":");
+}
+
+

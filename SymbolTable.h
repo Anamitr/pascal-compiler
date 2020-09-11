@@ -25,6 +25,7 @@ public:
     void addLocalDeclaredVariablesWithType(list<int> indexList, int typeCode);
 
     int currentlyProcessedSubprogramIndex = -1;
+    int labelCounter = 1;
 
 private:
     vector<Entry> entries;

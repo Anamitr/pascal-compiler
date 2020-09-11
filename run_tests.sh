@@ -24,8 +24,10 @@ function compile_and_test () {
   done
 }
 
-programArray=(t0 t1 t2 t3 t4 t5 t6 t7 t8)
-#programArray=(t8)
+# Arrays are not implemented, so t9 is skipped
+
+programArray=(t0 t1 t2 t3 t4 t5 t6 t7 t8 t10)
+#programArray=(t10)
 should_print_output=false
 #should_print_output=true
 

@@ -24,11 +24,17 @@ OR "or"
 %%
 
 {RELOPS}        {
-                    //yylval = decodeRelOp(yytext);
+                    printf("Flex\t\t\t\t\t\trelop: '%s'\n%d", yytext, yylval);
+                    if (strcmp(yytext,"=") == 0) yylval = EQUAL;
+                    if (strcmp(yytext,"<>") == 0) yylval = NOT_EQUAL;
+                    if (strcmp(yytext,"<") == 0) yylval = LOWER;
+                    if (strcmp(yytext,"<=") == 0) yylval = LOWER_OR_EQUAL;
+                    if (strcmp(yytext,">=") == 0) yylval = HIGHER;
+                    if (strcmp(yytext,">") == 0) yylval = HIGHER_OR_EQUAL;
                     return RELOP;
                 }
 {MULOPS}        {
-                    printf("mulop: '%s'\n", yytext);
+                    printf("Flex\t\t\t\t\t\tmulop: '%s'\n", yytext);
                     if (strcmp(yytext,"*") == 0) yylval = MULTIPLICATION;
                     if (strcmp(yytext,"/") == 0) yylval = DIVISION;
                     if (strcmp(yytext,"div") == 0) yylval = DIVISION;

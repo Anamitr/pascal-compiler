@@ -39,3 +39,7 @@ ostream &operator<<(ostream &os, const Entry &entry) {
     return os;
 }
 
+string Entry::getNameWithTypeString() {
+    return this->name + "(" + this->typeChar + ")";
+}
+

@@ -51,11 +51,18 @@ int localMemAllocSize = 0;
 /* signs */
 %token PLUS
 %token MINUS
-/* mulop's */
+/* mulops */
 %token MULTIPLICATION
 %token DIVISION
 %token MOD
 %token AND
+/* relops */
+%token EQUAL
+%token NOT_EQUAL
+%token LOWER
+%token LOWER_OR_EQUAL
+%token HIGHER
+%token HIGHER_OR_EQUAL
 
 %token OR_OP
 %token INT_TO_REAL
@@ -244,7 +251,9 @@ expression {
 expression:
 simple_expression {$$ = $1;}
 | simple_expression RELOP simple_expression {
-
+	Entry& leftEntry = symbolTable.getEntryByIndex($1);
+	Entry& rightEntry = symbolTable.getEntryByIndex($3);
+	$$ = emitter.generateRelop($2, leftEntry, rightEntry);
 }
 
 simple_expression:

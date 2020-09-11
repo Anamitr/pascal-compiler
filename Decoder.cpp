@@ -1,5 +1,7 @@
 #include "Decoder.h"
 
+
+
 string Decoder::decodeSign(int signCode) {
     switch (signCode) {
         case PLUS:
@@ -93,3 +95,32 @@ string Decoder::getTokenTypeStringFromCode(int tokenTypeCode) {
             exit(-1);
     }
 }
+
+constexpr unsigned int Decoder::str2int(const char *str, int h) {
+    return !str[h] ? 5381 : (str2int(str, h+1) * 33) ^ str[h];
+}
+
+string Decoder::getRelopOperationFromString(string relopSign) {
+    const char *relopSingCStr = relopSign.c_str();
+    switch (str2int(relopSingCStr)) {
+        case str2int("<"):
+            return "jl";
+        default:
+            cout << "!-Decoder::getRelopOperationFromString\t" << "No such relop sign "
+                 << relopSign << "!" << endl;
+            exit(-1);
+    }
+}
+
+string Decoder::getRelopCommandStringFromCode(int relopCode) {
+    switch (relopCode) {
+        case EQUAL:
+            return "je";
+        case LOWER:
+            return "jl";
+        default:
+            cout << "!-Decoder::getRelopCommandStringFromCode\t" << "No such relop sign "
+                 << relopCode << "!" << endl;
+    }
+}
+

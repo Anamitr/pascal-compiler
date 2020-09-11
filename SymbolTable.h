@@ -19,7 +19,7 @@ public:
 
     void addGlobalVariablesWithType(list<int> indexList, int typeCode);
     void addLocalVariableWithType(int index, int typeCode);
-    void assignVariableItsType(Entry& entry, int typeCode);
+//    void assignVariableItsType(Entry& entry, int typeCode);
     list<Entry> assignPointerAddresses();
     void assignSubprogramItsArguments(Entry& subprogramEntry, list<int>& argumentsIndexes);
     void addLocalDeclaredVariablesWithType(list<int> indexList, int typeCode);

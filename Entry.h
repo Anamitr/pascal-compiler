@@ -42,4 +42,7 @@ public:
     friend ostream &operator<<(ostream &os, const Entry &entry);
     string getNameWithTypeString();
     string getNameWithTokenTypeString();
+
+private:
+    void shortenIfReal();
 };

@@ -18,7 +18,7 @@ int SymbolTable::insert(const string name, int typeOfToken, int typeCode) {
     entry.tokenTypeCode = typeOfToken;
     if (typeOfToken == NUM) entry.isConstant = true;
     entry.name = name;
-    if (typeCode != -1) assignVariableItsType(entry, typeCode);
+    if (typeCode != -1) entry.assignType(typeCode);
 
     int p = entries.size();
     entry.indexInSymbolTable = p;
@@ -33,7 +33,7 @@ void SymbolTable::addGlobalVariablesWithType(list<int> indexList, int typeCode) 
     idsMsg.append("SymbolTable::addGlobalVariablesWithType\t\tindexList: ");
     for (int index : indexList) {
         idsMsg.append(to_string(index) + ", ");
-        assignVariableItsType(entries.at(index), typeCode);
+        entries.at(index).assignType(typeCode);
         entries[index].positionInMemory = freeMemoryPointer;
         cout << "SymbolTable::addGlobalVariablesWithType\t\tVariable "
              << entries[index].name << " allocated at " << freeMemoryPointer << endl;
@@ -44,10 +44,10 @@ void SymbolTable::addGlobalVariablesWithType(list<int> indexList, int typeCode) 
 }
 
 
-void SymbolTable::assignVariableItsType(Entry &entry, int typeCode) {
-    entry.typeCode = typeCode;
-    entry.typeChar = Decoder::getShortTypeSignFromCode(typeCode);
-}
+//void SymbolTable::assignVariableItsType(Entry &entry, int typeCode) {
+//    entry.typeCode = typeCode;
+//    entry.typeChar = Decoder::getShortTypeSignFromCode(typeCode);
+//}
 
 Entry &SymbolTable::getEntryByIndex(int index) {
     return entries.at(index);
@@ -122,7 +122,8 @@ void SymbolTable::addLocalDeclaredVariablesWithType(list<int> indexList, int typ
     int entrySize = Decoder::getVarTypeSize(typeCode);
     for (int index : indexList) {
         Entry& localVar = this->getEntryByIndex(index);
-        this->assignVariableItsType(localVar, typeCode);
+        localVar.assignType(typeCode);
+//        this->assignVariableItsType(localVar, typeCode);
         localVar.isLocal = true;
         localMemAllocSize += entrySize;
         this->BPLowerOffsetPointer -= entrySize;

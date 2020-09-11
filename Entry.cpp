@@ -2,7 +2,7 @@
 #include "Entry.h"
 
 string Entry::getPosInMemString() {
-    if(this->isFunction) {
+    if (this->isFunction) {
         return "*BP+" + to_string(this->BPOffset);
     } else if (this->isLocal) {
         return "BP" + to_string(this->BPOffset);
@@ -12,7 +12,7 @@ string Entry::getPosInMemString() {
         } else {
             return "${" + this->name + "-memAddr}";
         }
-    } else if(this->isConstant) {
+    } else if (this->isConstant) {
         return "#" + name;
     } else {
         return to_string(positionInMemory);
@@ -22,6 +22,7 @@ string Entry::getPosInMemString() {
 void Entry::assignType(int typeCode) {
     this->typeCode = typeCode;
     this->typeChar = Decoder::getShortTypeSignFromCode(typeCode);
+    this->shortenIfReal();
 }
 
 ostream &operator<<(ostream &os, const Entry &entry) {
@@ -32,7 +33,7 @@ ostream &operator<<(ostream &os, const Entry &entry) {
        << " isProcedure: " << entry.isProcedure << " isConstant: " << entry.isConstant << " isPointer: "
        << entry.isPointer << " isLocal: " << entry.isLocal << " memAllocSize: " << entry.memAllocSize
        << " numOfPointers: " << entry.numOfPointers << " subprogramArgumentsIndexes: ";
-    for(int argIndex : entry.subprogramArgumentsIndexes) {
+    for (int argIndex : entry.subprogramArgumentsIndexes) {
         cout << argIndex << ", ";
     }
     cout << endl;
@@ -45,5 +46,16 @@ string Entry::getNameWithTypeString() {
 
 string Entry::getNameWithTokenTypeString() {
     return this->name + "(" + Decoder::getTokenTypeStringFromCode(this->tokenTypeCode) + ")";
+}
+
+void Entry::shortenIfReal() {
+    if (this->typeCode == REAL) {
+        cout << "Entry::shortenIfReal" << endl;
+        this->name.erase(this->name.find_last_not_of('0') + 1, std::string::npos);
+        if (this->name.back() == '.') {
+            this->name = this->name.substr(0, this->name.size() - 1);
+        }
+
+    }
 }
 

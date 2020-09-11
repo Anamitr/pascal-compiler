@@ -135,7 +135,7 @@ FUNCTION ID arguments ':' standard_type ';' {
 	Entry& functionEntry = symbolTable.getEntryByIndex($2);
 	functionEntry.isFunction = true;
 //	functionEntry.isPointer = true;
-	symbolTable.assignVariableItsType(functionEntry, $5);
+	functionEntry.assignType($5);
 //	symbolTable.allocateFunReturnVarPointer(functionEntry);
 	symbolTable.assignSubprogramItsArguments(functionEntry, paramterList);
 	paramterList.clear();

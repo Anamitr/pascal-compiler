@@ -17,5 +17,6 @@ Entry getStubLiteralEntry(string name, int typeCode){
     entry.isConstant = true;
     entry.name = name;
     entry.assignType(typeCode);
+//    entry.shortenIfReal();
     return entry;
 }

@@ -1,4 +1,6 @@
 #!/bin/bash
+
+
 function compile_and_test () {
   arr=("$@")
 
@@ -22,11 +24,13 @@ function compile_and_test () {
   done
 }
 
-#programArray=(t0 t1 t2 t3 t4 t5 t6)
-programArray=(t6)
-#should_print_output=false
-should_print_output=true
+programArray=(t0 t1 t2 t3 t4 t5 t6 t7 t8)
+#programArray=(t8)
+should_print_output=false
+#should_print_output=true
 
-make clean ; make
+make clean
+set -e
+make
 printf "\nTests:\n"
 compile_and_test "${programArray[@]}"

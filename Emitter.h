@@ -14,7 +14,6 @@ public:
     int generateSignOperation(int operationCode, Entry leftEntry, Entry rightEntry);
     int generateAssignOperation(Entry leftEntry, Entry rightEntry);
     Entry generateConversion(int conversionCode, Entry varToConvert);
-    //Entry generateMulOperation(Entry leftEntry, Entry rightEntry);
     vector<Entry> convertToSameType(Entry leftEntry, Entry rightEntry);
 
     void emitWrite(Entry varToWrite);

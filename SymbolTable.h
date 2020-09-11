@@ -14,7 +14,6 @@ public:
 
     Entry& getEntryByIndex(int index);
     Entry allocateTempVarOfType(int typeCode);
-//    string getEntryNameByIndex(int index);
     Entry allocateFunReturnVarPointer(Entry& functionEntry);
     void pushParametersToStack(list<int> indexList, int typeCode);
 

@@ -29,24 +29,19 @@ int Emitter::generateSignOperation(int operationCode, Entry leftEntry, Entry rig
         rightEntry = convertedEntries[1];
     }
 
-    if (leftEntry.typeCode == rightEntry.typeCode) {
-        operationVarType = leftEntry.typeCode;
-        command.append(Decoder::getShortTypeSignFromCode(operationVarType) + "\t");
-        command.append(leftEntry.getPosInMemString() + ",");
-        command.append(rightEntry.getPosInMemString() + ",");
-        Entry resultEntry = symbolTable.allocateTempVarOfType(operationVarType);
-        command.append(resultEntry.getPosInMemString());
-        this->emitString(command);
-        return resultEntry.indexInSymbolTable;
-    } else {
-        // TODO: typeCode conversion
-        cout << "Type conversion not implemented" << endl;
-    }
+    operationVarType = leftEntry.typeCode;
+    command.append(Decoder::getShortTypeSignFromCode(operationVarType) + "\t");
+    command.append(leftEntry.getPosInMemString() + ",");
+    command.append(rightEntry.getPosInMemString() + ",");
+    Entry resultEntry = symbolTable.allocateTempVarOfType(operationVarType);
+    command.append(resultEntry.getPosInMemString());
+    this->emitString(command);
+    return resultEntry.indexInSymbolTable;
+
 }
 
 int Emitter::generateAssignOperation(Entry leftEntry, Entry rightEntry) {
     Entry entryToAssign = rightEntry;
-//    cout << leftEntry << endl;
 
     if (leftEntry.typeCode != rightEntry.typeCode) {
         Entry convertedRightEntry = generateConversion(
@@ -61,11 +56,6 @@ int Emitter::generateAssignOperation(Entry leftEntry, Entry rightEntry) {
     string command = "\t";
     command.append("mov." + leftEntry.typeChar + "\t");
     command.append(assignValue + ",");
-//    cout << "Emitter::generateAssignOperation\t\tleftEntry.isFunction:" << leftEntry.isFunction << endl;
-//    cout << "Emitter::generateAssignOperation\t\t" + leftEntry.name +
-//            "(" + leftEntry.typeChar << ")[" << leftEntry.indexInSymbolTable
-//         << "], BPOffset = " << leftEntry.BPOffset << endl;
-//    cout << "entryToAssign: " << entryToAssign;
     command.append(leftEntry.getPosInMemString());
     this->emitString(command);
 }
@@ -143,12 +133,9 @@ int Emitter::callSubprogram(Entry &subprogramEntry, const list<int> &callArgumen
     vector<int> callArgumentsVector{std::begin(callArguments), std::end(callArguments)};
     cout << "Emitter::callSubprogram\t\t\t\t" << "calling subprogram " << subprogramEntry.name
          << " with arguments (" << callArgumentsVector.size() << "):" << endl;
-//    cout << subprogramEntry << endl;
 
     for (int i = 0; i < callArgumentsVector.size(); i++) {
-//        cout << "Dupa2" << endl;
         Entry argEntry = symbolTable.getEntryByIndex(callArgumentsVector.at(i));
-//        cout << argEntry.name << ", ";
         int addrToPush = -9999;
 
         Entry correspondingPointerEntry = symbolTable.getEntryByIndex(subprogramEntry
@@ -203,7 +190,3 @@ void Emitter::writePointerAddresses() {
                         pointerEntry.posInMemoryString);
     }
 }
-
-//Entry Emitter::generateMulOperation(Entry leftEntry, Entry rightEntry) {
-//    return Entry();
-//}

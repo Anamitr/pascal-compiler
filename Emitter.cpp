@@ -61,9 +61,10 @@ int Emitter::generateAssignOperation(Entry leftEntry, Entry rightEntry) {
     command.append("mov." + leftEntry.typeChar + "\t");
     command.append(assignValue + ",");
 //    cout << "Emitter::generateAssignOperation\t\tleftEntry.isFunction:" << leftEntry.isFunction << endl;
-    cout << "Emitter::generateAssignOperation\t" + leftEntry.name +
-            "(" + leftEntry.typeChar << ")[" << leftEntry.indexInSymbolTable
-         << "], BPOffset = " << leftEntry.BPOffset << endl;
+//    cout << "Emitter::generateAssignOperation\t\t" + leftEntry.name +
+//            "(" + leftEntry.typeChar << ")[" << leftEntry.indexInSymbolTable
+//         << "], BPOffset = " << leftEntry.BPOffset << endl;
+//    cout << "entryToAssign: " << entryToAssign;
     command.append(leftEntry.getPosInMemString());
     this->emitString(command);
 }
@@ -134,19 +135,39 @@ void Emitter::setSubprogramMemAllocSize() {
                     to_string(subprogramEntry.memAllocSize));
 }
 
-int Emitter::callSubprogram(const Entry &subprogramEntry) {
+int Emitter::callSubprogram(Entry &subprogramEntry, list<int> callArguments) {
+    cout << "Emitter::callSubprogram\t\t\t\t" << "calling subprogram " << subprogramEntry.name
+         << "with arguments: " << endl;
+    for (int argIndex : callArguments) {
+        Entry argEntry = symbolTable.getEntryByIndex(argIndex);
+        cout << argEntry.name << ", ";
+        int addrToPush = -9999;
+        if (argEntry.isConstant) {
+            Entry tempVar = symbolTable.allocateTempVarOfType(argEntry.typeCode);
+            this->generateAssignOperation(tempVar, argEntry);
+            addrToPush = tempVar.positionInMemory;
+        }
+        this->emitString("\tpush.i\t#" + to_string(addrToPush));
+        subprogramEntry.numOfPointers += 1;
+    }
+    cout << endl;
+
+    int result = callSubprogram(subprogramEntry);
+    return result;
+}
+
+int Emitter::callSubprogram(Entry &subprogramEntry) {
     cout << "Emitter::callSubprogram\t\t\t\t" << "calling subprogram " << subprogramEntry.name << endl;
     int result = -1;
-    int subprogramStackPointer = 0;
     if (subprogramEntry.isFunction) {
         Entry funReturnVar = symbolTable.allocateTempVarOfType(subprogramEntry.typeCode);
         this->emitString("\tpush.i  #" + funReturnVar.getPosInMemString());
-        subprogramStackPointer++;
+        subprogramEntry.numOfPointers += 1;
         result = funReturnVar.indexInSymbolTable;
     }
     this->emitString("\tcall.i\t#" + subprogramEntry.name);
-    if (subprogramStackPointer != 0) {
-        this->emitString("\tincsp.i\t#" + to_string(subprogramStackPointer *
+    if (subprogramEntry.numOfPointers != 0) {
+        this->emitString("\tincsp.i\t#" + to_string(subprogramEntry.numOfPointers *
                                                     Decoder::getVarTypeSize(INTEGER)));
     }
     cout << "Emitter::callSubprogram\t\t\t\t" << "result = " << result << endl;
@@ -161,6 +182,7 @@ void Emitter::writePointerAddresses() {
                         pointerEntry.posInMemoryString);
     }
 }
+
 
 
 

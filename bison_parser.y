@@ -5,6 +5,7 @@
 #include <string.h>
 
 std::list<int> idsTempList;
+std::list<int> callArguments;
 
 bool isGlobal = true;
 int localMemAllocSize = 0;
@@ -120,6 +121,7 @@ subprogram_head:
 FUNCTION ID arguments ':' standard_type ';' {
 	Entry& functionEntry = symbolTable.getEntryByIndex($2);
 	functionEntry.isFunction = true;
+//	functionEntry.isPointer = true;
 	symbolTable.assignVariableItsType(functionEntry, $5);
 //	symbolTable.allocateFunReturnVarPointer(functionEntry);
 	emitter.emitSubprogramStart(functionEntry);
@@ -199,30 +201,30 @@ ID {}
 
 procedure_statement:
 ID {
-	printf("Bison:\t\t\t\t\t\tFound subprogram: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
+	printf("Bison:\t\t\t\t\t\tFound subprogram call: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
 	Entry subprogramEntry = symbolTable.getEntryByIndex($1);
 	printf("subprogramEntry.isProcedure %d\n", subprogramEntry.isProcedure);
 	if (subprogramEntry.isProcedure) {
-		emitter.callSubprogram(subprogramEntry);
+		$$ = emitter.callSubprogram(subprogramEntry);
 	}
 }
 | ID '(' expression_list ')' {
-	printf("Bison:\t\t\t\t\t\tFound subprogram: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
+	printf("Bison:\t\t\t\t\t\tFound subprogram call: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
 	Entry& subprogramEntry = symbolTable.getEntryByIndex($1);
 	if(strcmp(subprogramEntry.name.c_str(), "write") == 0) {
 		emitter.emitWrite(symbolTable.getEntryByIndex($3));
-	} else if (subprogramEntry.isProcedure == true) {
-		emitter.callSubprogram(subprogramEntry);
+	} else if (subprogramEntry.isProcedure == true || subprogramEntry.isFunction == true) {
+		$$ = emitter.callSubprogram(subprogramEntry, callArguments);
 	}
-
+	callArguments.clear();
 }
 
 expression_list:
 expression {
-
+	callArguments.push_back($1);
 }
 | expression_list ',' expression {
-
+	callArguments.push_back($3);
 }
 
 expression:
@@ -265,7 +267,14 @@ variable {
 	}
 }
 | ID '(' expression_list ')' {
-
+	printf("Bison:\t\t\t\t\t\tFound subprogram call: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
+	Entry& subprogramEntry = symbolTable.getEntryByIndex($1);
+	if(strcmp(subprogramEntry.name.c_str(), "write") == 0) {
+		emitter.emitWrite(symbolTable.getEntryByIndex($3));
+	} else if (subprogramEntry.isProcedure == true || subprogramEntry.isFunction == true) {
+		$$ = emitter.callSubprogram(subprogramEntry, callArguments);
+	}
+	callArguments.clear();
 }
 | NUM {
 //	printf("Bison:\t\t\t\tFound NUM: %d\n", $1);

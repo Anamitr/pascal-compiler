@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ostream>
 #include "global.h"
 
 using namespace std;
@@ -25,9 +26,11 @@ public:
     bool isLocal = false;
 
     int memAllocSize = 0;
+    int numOfPointers = 0;
 
     string getPosInMemString();
     void assignType(int typeCode);
 
 //    string getName() { return name;}
+    friend ostream &operator<<(ostream &os, const Entry &entry);
 };

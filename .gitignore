@@ -1,2 +1,10 @@
 cmake-build-debug/*
 .idea/*
+testing/mine_out/*
+
+*.o
+*.gch
+flex.c
+parser.c
+parser.h
+pascal-compiler

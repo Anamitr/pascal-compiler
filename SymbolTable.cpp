@@ -104,3 +104,14 @@ list<Entry> SymbolTable::assignPointerAddresses() {
     }
     return result;
 }
+
+void SymbolTable::assignSubprogramItsArguments(Entry& subprogramEntry, list<int>& argumentsIndexes) {
+    subprogramEntry.subprogramArgumentsIndexes = { std::begin(argumentsIndexes),
+                                                   std::end(argumentsIndexes) };
+    cout << "SymbolTable::assignSubprogramItsArguments\t" << subprogramEntry.name << ": ";
+    for (int i : subprogramEntry.subprogramArgumentsIndexes) {
+        Entry argument = this->getEntryByIndex(i);
+        cout << argument.name << ", ";
+    }
+    cout << endl;
+}

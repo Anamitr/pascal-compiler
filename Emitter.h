@@ -21,7 +21,7 @@ public:
     void emitSubprogramStart(Entry& subprogramEntry);
     void emitSubprogramLeave();
     void setSubprogramMemAllocSize();
-    int callSubprogram(Entry& subprogramEntry, list<int> callArguments);
+    int callSubprogram(Entry& subprogramEntry, const list<int>& callArguments);
     int callSubprogram(Entry& subprogramEntry);
 
     void writePointerAddresses();

@@ -28,9 +28,10 @@ public:
     int memAllocSize = 0;
     int numOfPointers = 0;
 
+    vector<int> subprogramArgumentsIndexes;
+
     string getPosInMemString();
     void assignType(int typeCode);
 
-//    string getName() { return name;}
     friend ostream &operator<<(ostream &os, const Entry &entry);
 };

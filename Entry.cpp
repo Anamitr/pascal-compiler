@@ -31,6 +31,11 @@ ostream &operator<<(ostream &os, const Entry &entry) {
        << entry.posInMemoryString << " isVariable: " << entry.isVariable << " isFunction: " << entry.isFunction
        << " isProcedure: " << entry.isProcedure << " isConstant: " << entry.isConstant << " isPointer: "
        << entry.isPointer << " isLocal: " << entry.isLocal << " memAllocSize: " << entry.memAllocSize
-       << " numOfPointers: " << entry.numOfPointers << endl;
+       << " numOfPointers: " << entry.numOfPointers << " subprogramArgumentsIndexes: ";
+    for(int argIndex : entry.subprogramArgumentsIndexes) {
+        cout << argIndex << ", ";
+    }
+    cout << endl;
     return os;
 }
+

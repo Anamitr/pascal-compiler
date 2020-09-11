@@ -18,11 +18,11 @@ public:
     Entry allocateFunReturnVarPointer(Entry& functionEntry);
     void pushParametersToStack(list<int> indexList, int typeCode);
 
-
     void addGlobalVariablesWithType(list<int> indexList, int typeCode);
     void addLocalVariableWithType(int index, int typeCode);
     void assignVariableItsType(Entry& entry, int typeCode);
     list<Entry> assignPointerAddresses();
+    void assignSubprogramItsArguments(Entry& subprogramEntry, list<int>& argumentsIndexes);
 
     int currentlyProcessedSubprogramIndex = -1;
 

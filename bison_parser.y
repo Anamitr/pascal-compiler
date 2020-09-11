@@ -6,6 +6,7 @@
 
 std::list<int> idsTempList;
 std::list<int> callArguments;
+std::list<int> paramterList;
 
 bool isGlobal = true;
 int localMemAllocSize = 0;
@@ -125,6 +126,8 @@ FUNCTION ID arguments ':' standard_type ';' {
 //	functionEntry.isPointer = true;
 	symbolTable.assignVariableItsType(functionEntry, $5);
 //	symbolTable.allocateFunReturnVarPointer(functionEntry);
+	symbolTable.assignSubprogramItsArguments(functionEntry, paramterList);
+	paramterList.clear();
 	emitter.emitSubprogramStart(functionEntry);
 	symbolTable.currentlyProcessedSubprogramIndex =
 		functionEntry.indexInSymbolTable;
@@ -132,6 +135,8 @@ FUNCTION ID arguments ':' standard_type ';' {
 | PROCEDURE ID arguments ';' {
 	Entry& procedureEntry = symbolTable.getEntryByIndex($2);
 	procedureEntry.isProcedure = true;
+	symbolTable.assignSubprogramItsArguments(procedureEntry, paramterList);
+	paramterList.clear();
 	emitter.emitSubprogramStart(procedureEntry);
 	symbolTable.currentlyProcessedSubprogramIndex =
 		procedureEntry.indexInSymbolTable;
@@ -148,11 +153,13 @@ arguments:
 parameter_list:
 identifier_list ':' type {
 	symbolTable.pushParametersToStack(idsTempList, $3);
+	paramterList.splice(paramterList.end(), idsTempList);
 	idsTempList.clear();
 }
 | parameter_list ';' identifier_list ':' type {
 	printf("Bison:\t\t\t\t\t\tPushing parameters\n");
 	symbolTable.pushParametersToStack(idsTempList, $5);
+	paramterList.splice(paramterList.end(), idsTempList);
 	idsTempList.clear();
 }
 

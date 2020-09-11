@@ -135,13 +135,27 @@ void Emitter::setSubprogramMemAllocSize() {
                     to_string(subprogramEntry.memAllocSize));
 }
 
-int Emitter::callSubprogram(Entry &subprogramEntry, list<int> callArguments) {
+int Emitter::callSubprogram(Entry &subprogramEntry, const list<int> &callArguments) {
+    vector<int> callArgumentsVector{std::begin(callArguments), std::end(callArguments)};
     cout << "Emitter::callSubprogram\t\t\t\t" << "calling subprogram " << subprogramEntry.name
-         << " with arguments: " << endl;
-    for (int argIndex : callArguments) {
-        Entry argEntry = symbolTable.getEntryByIndex(argIndex);
-        cout << argEntry.name << ", ";
+         << " with arguments (" << callArgumentsVector.size() << "):" << endl;
+//    cout << subprogramEntry << endl;
+
+    for (int i = 0; i < callArgumentsVector.size(); i++) {
+//        cout << "Dupa2" << endl;
+        Entry argEntry = symbolTable.getEntryByIndex(callArgumentsVector.at(i));
+//        cout << argEntry.name << ", ";
         int addrToPush = -9999;
+
+        Entry correspondingPointerEntry = symbolTable.getEntryByIndex(subprogramEntry
+                                                                              .subprogramArgumentsIndexes.at(i));
+        if (argEntry.typeCode != correspondingPointerEntry.typeCode) {
+            cout << "Emitter::callSubprogram\t\t\t\t" << "Argument type doesn't match, got "
+                 << argEntry.typeChar << ", expected " << correspondingPointerEntry.typeChar << endl;
+            argEntry = this->generateConversion(Decoder::getConversionCodeFromEntriesTypes(
+                    argEntry.typeCode, correspondingPointerEntry.typeCode), argEntry);
+        }
+
         if (argEntry.isConstant) {
             Entry tempVar = symbolTable.allocateTempVarOfType(argEntry.typeCode);
             this->generateAssignOperation(tempVar, argEntry);

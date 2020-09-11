@@ -137,7 +137,7 @@ void Emitter::setSubprogramMemAllocSize() {
 
 int Emitter::callSubprogram(Entry &subprogramEntry, list<int> callArguments) {
     cout << "Emitter::callSubprogram\t\t\t\t" << "calling subprogram " << subprogramEntry.name
-         << "with arguments: " << endl;
+         << " with arguments: " << endl;
     for (int argIndex : callArguments) {
         Entry argEntry = symbolTable.getEntryByIndex(argIndex);
         cout << argEntry.name << ", ";
@@ -146,6 +146,8 @@ int Emitter::callSubprogram(Entry &subprogramEntry, list<int> callArguments) {
             Entry tempVar = symbolTable.allocateTempVarOfType(argEntry.typeCode);
             this->generateAssignOperation(tempVar, argEntry);
             addrToPush = tempVar.positionInMemory;
+        } else {
+            addrToPush = argEntry.positionInMemory;
         }
         this->emitString("\tpush.i\t#" + to_string(addrToPush));
         subprogramEntry.numOfPointers += 1;
@@ -177,7 +179,7 @@ int Emitter::callSubprogram(Entry &subprogramEntry) {
 void Emitter::writePointerAddresses() {
     list<Entry> pointerEntries = symbolTable.assignPointerAddresses();
     for (Entry pointerEntry : pointerEntries) {
-        cout << "Emitter::writePointerAddresses\t\t" << pointerEntry.name << endl;
+        cout << "Emitter::writePointerAddresses\t\t\t" << pointerEntry.name << endl;
         replaceInString(output, "${" + pointerEntry.name + "-memAddr}",
                         pointerEntry.posInMemoryString);
     }

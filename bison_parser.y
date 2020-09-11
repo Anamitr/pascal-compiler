@@ -58,6 +58,7 @@ int localMemAllocSize = 0;
 
 %token OR_OP
 %token INT_TO_REAL
+%token REAL_TO_INT
 
 %token UNKOWN
 
@@ -147,11 +148,12 @@ arguments:
 parameter_list:
 identifier_list ':' type {
 	symbolTable.pushParametersToStack(idsTempList, $3);
-//	idsTempList.clear();
+	idsTempList.clear();
 }
 | parameter_list ';' identifier_list ':' type {
 	printf("Bison:\t\t\t\t\t\tPushing parameters\n");
 	symbolTable.pushParametersToStack(idsTempList, $5);
+	idsTempList.clear();
 }
 
 compound_statement:

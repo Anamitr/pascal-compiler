@@ -96,7 +96,7 @@ list<Entry> SymbolTable::assignPointerAddresses() {
     for (int index : this->parametersStack) {
         Entry entry = this->getEntryByIndex(index);
         entry.BPOffset = this->BPOffsetPointer;
-        BPOffsetPointer += Decoder::getVarTypeSize(entry.typeCode);
+        BPOffsetPointer += Decoder::getVarTypeSize(INTEGER);
         entry.posInMemoryString = "*BP+" + to_string(entry.BPOffset);
         result.push_back(entry);
         cout << "SymbolTable::assignPointerAddresses\t\t" << entry.name << ", " <<

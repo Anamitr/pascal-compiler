@@ -49,6 +49,8 @@ string Decoder::getConversionStringFromCode(int conversionCode) {
     switch (conversionCode) {
         case INT_TO_REAL:
             return "inttoreal";
+        case REAL_TO_INT:
+            return "realtoint";
         default:
             cout << "No such conversion type " << conversionCode << "!" << endl;
             exit(-1);
@@ -59,6 +61,8 @@ int Decoder::getConversionResultType(int conversionCode) {
     switch (conversionCode) {
         case INT_TO_REAL:
             return REAL;
+        case REAL_TO_INT:
+            return INTEGER;
         default:
             cout << "No such conversion type " << conversionCode << "!" << endl;
             exit(-1);
@@ -67,6 +71,7 @@ int Decoder::getConversionResultType(int conversionCode) {
 
 int Decoder::getConversionCodeFromEntriesTypes(int oldType, int newType) {
     if (oldType == INTEGER && newType == REAL) return INT_TO_REAL;
+    if (oldType == REAL && newType == INTEGER) return REAL_TO_INT;
     else {
         cout << "No such conversion type from " << oldType << " to " << newType << "!" << endl;
         exit(-1);

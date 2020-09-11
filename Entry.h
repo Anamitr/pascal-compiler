@@ -15,15 +15,19 @@ public:
 
     string name;
     string typeChar;
+    string posInMemoryString;
 
     bool isVariable = false;
     bool isFunction = false;
     bool isProcedure = false;
     bool isConstant = false;
+    bool isPointer = false;
+    bool isLocal = false;
 
     int memAllocSize = 0;
 
     string getPosInMemString();
+    void assignType(int typeCode);
 
 //    string getName() { return name;}
 };

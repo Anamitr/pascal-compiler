@@ -53,16 +53,54 @@ Entry &SymbolTable::getEntryByIndex(int index) {
 
 Entry SymbolTable::allocateTempVarOfType(int typeCode) {
     int p = this->insert("t" + to_string(tempVarCounter++), ID, typeCode);
-    list<int> ids;
-    ids.push_back(p);
-    addGlobalVariablesWithType(ids, typeCode);
-    return this->getEntryByIndex(p);
+    Entry &entry = this->getEntryByIndex(p);
+    if (isGlobal) {
+        list<int> ids;
+        ids.push_back(p);
+        addGlobalVariablesWithType(ids, typeCode);
+    } else {
+        entry.typeCode = typeCode;
+        entry.isLocal = true;
+        int entrySize = Decoder::getVarTypeSize(typeCode);
+        localMemAllocSize += entrySize;
+        this->BPLowerOffsetPointer -= entrySize;
+        entry.BPOffset = this->BPLowerOffsetPointer;
+        cout << "SymbolTable::allocateTempVarOfType\t\t" << "Allocated local temp var name: "
+             << entry.name << ", pos in memory: " << entry.getPosInMemString() << endl;
+    }
+    return entry;
 }
 
-Entry SymbolTable::allocateFunReturnVarPointer(Entry& functionEntry) {
-    cout << "SymbolTable::allocateFunReturnVarPointer\t" + functionEntry.name +
-            " - " + functionEntry.typeChar << endl;
+Entry SymbolTable::allocateFunReturnVarPointer(Entry &functionEntry) {
     functionEntry.BPOffset = BPOffsetPointer;
     BPOffsetPointer += Decoder::getVarTypeSize(functionEntry.typeCode);
-    return Entry();
+    cout << "SymbolTable::allocateFunReturnVarPointer\t" + functionEntry.name +
+            "(" + functionEntry.typeChar << ")[" << functionEntry.indexInSymbolTable
+         << "], BPOffset = " << functionEntry.BPOffset << endl;
+    return functionEntry;
+}
+
+void SymbolTable::pushParametersToStack(list<int> indexList, int typeCode) {
+    for (int index : indexList) {
+        parametersStack.push_front(index);
+        Entry &entry = symbolTable.getEntryByIndex(index);
+        entry.isPointer = true;
+        entry.assignType(typeCode);
+        cout << "SymbolTable::pushParametersToStack\t\t" << "Pushed parameter " << entry.name
+             << "(" << entry.typeChar << ")" << endl;
+    }
+}
+
+list<Entry> SymbolTable::assignPointerAddresses() {
+    list<Entry> result;
+    for (int index : this->parametersStack) {
+        Entry entry = this->getEntryByIndex(index);
+        entry.BPOffset = this->BPOffsetPointer;
+        BPOffsetPointer += Decoder::getVarTypeSize(entry.typeCode);
+        entry.posInMemoryString = "*BP+" + to_string(entry.BPOffset);
+        result.push_back(entry);
+        cout << "SymbolTable::assignPointerAddresses\t\t" << entry.name << ", " <<
+             entry.posInMemoryString << endl;
+    }
+    return result;
 }

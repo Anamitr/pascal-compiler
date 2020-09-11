@@ -18,11 +18,12 @@ public:
     vector<Entry> convertToSameType(Entry leftEntry, Entry rightEntry);
 
     void emitWrite(Entry varToWrite);
-    void emitSubprogramStart(Entry subprogramEntry);
+    void emitSubprogramStart(Entry& subprogramEntry);
     void emitSubprogramLeave();
     void setSubprogramMemAllocSize();
     int callSubprogram(const Entry& subprogramEntry);
 
+    void writePointerAddresses();
     void writeToFile(string outputFileName);
 
 private:

@@ -6,7 +6,8 @@
 
 std::list<int> idsTempList;
 
-bool isInMain = false;
+bool isGlobal = true;
+int localMemAllocSize = 0;
 
 %}
 
@@ -69,10 +70,11 @@ PROGRAM_TOKEN ID '(' identifier_list ')'
 	idsTempList.clear();
 }
 
-declarations
+declarations {isGlobal = false;}
 subprogram_declarations {
+	emitter.writePointerAddresses();
 	emitter.emitString("lab0:");
-	isInMain = true;
+	isGlobal = true;
 }
 compound_statement
 '.' {
@@ -119,7 +121,7 @@ FUNCTION ID arguments ':' standard_type ';' {
 	Entry& functionEntry = symbolTable.getEntryByIndex($2);
 	functionEntry.isFunction = true;
 	symbolTable.assignVariableItsType(functionEntry, $5);
-	symbolTable.allocateFunReturnVarPointer(functionEntry);
+//	symbolTable.allocateFunReturnVarPointer(functionEntry);
 	emitter.emitSubprogramStart(functionEntry);
 	symbolTable.currentlyProcessedSubprogramIndex =
 		functionEntry.indexInSymbolTable;
@@ -134,16 +136,20 @@ FUNCTION ID arguments ':' standard_type ';' {
 
 arguments:
 '(' parameter_list ')' {
-
+	printf("Bison:\t\t\t\t\t\tGot parameter list, currently processed subprogram index = %d\n",
+		symbolTable.currentlyProcessedSubprogramIndex);
+//	printf("Bison:\t\t\t\t\t\t");
 }
 | %empty
 
 parameter_list:
 identifier_list ':' type {
-
+	symbolTable.pushParametersToStack(idsTempList, $3);
+//	idsTempList.clear();
 }
 | parameter_list ';' identifier_list ':' type {
-
+	printf("Bison:\t\t\t\t\t\tPushing parameters\n");
+	symbolTable.pushParametersToStack(idsTempList, $5);
 }
 
 compound_statement:
@@ -229,11 +235,11 @@ simple_expression:
 term {$$ = $1;}
 | SIGN term
 | simple_expression SIGN term {
-	printf("Bison:\t\t\t\tsimple_expression: %d %d %d\n", $1, $2, $3);
+	printf("Bison:\t\t\t\t\t\tsimple_expression: %d %d %d\n", $1, $2, $3);
 	Entry leftEntry = symbolTable.getEntryByIndex($1);
 	Entry rightEntry = symbolTable.getEntryByIndex($3);
 	int resultIndex = emitter.generateSignOperation($2, leftEntry, rightEntry);
-	printf("Bison:\t\t\t\tresultIndex %d\n", resultIndex);
+	printf("Bison:\t\t\t\t\t\tresultIndex %d\n", resultIndex);
 	$$ = resultIndex;
 }
 | simple_expression OR term {

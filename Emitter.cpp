@@ -16,7 +16,9 @@ void Emitter::writeToFile(string outputFileName) {
 int Emitter::generateSignOperation(int operationCode, Entry leftEntry, Entry rightEntry) {
     string command = "\t";
     string operation = Decoder::decodeSign(operationCode);
-    cout << "Emitter::generateSignOperation\t\t\t" << "Got operation: " << operation << endl;
+    cout << "Emitter::generateSignOperation\t\t\t" << "Got operation: " << operation
+         << " between " << leftEntry.name << "(" << leftEntry.typeChar << ") and "
+         << rightEntry.name << "(" << rightEntry.typeChar << ")" << endl;
     command.append(operation + ".");
 
     int operationVarType = UNKOWN;
@@ -30,10 +32,10 @@ int Emitter::generateSignOperation(int operationCode, Entry leftEntry, Entry rig
     if (leftEntry.typeCode == rightEntry.typeCode) {
         operationVarType = leftEntry.typeCode;
         command.append(Decoder::getShortTypeSignFromCode(operationVarType) + "\t");
-        command.append(to_string(leftEntry.positionInMemory) + ",");
-        command.append(to_string(rightEntry.positionInMemory) + ",");
+        command.append(leftEntry.getPosInMemString() + ",");
+        command.append(rightEntry.getPosInMemString() + ",");
         Entry resultEntry = symbolTable.allocateTempVarOfType(operationVarType);
-        command.append(to_string(resultEntry.positionInMemory));
+        command.append(resultEntry.getPosInMemString());
         this->emitString(command);
         return resultEntry.indexInSymbolTable;
     } else {
@@ -51,12 +53,17 @@ int Emitter::generateAssignOperation(Entry leftEntry, Entry rightEntry) {
                                                            leftEntry.typeCode), rightEntry);
         entryToAssign = convertedRightEntry;
     }
-    cout << "Emitter::generateAssignOperation\t\t" << "assign vars: " << leftEntry.name << " := " << entryToAssign.name << endl;
+    cout << "Emitter::generateAssignOperation\t\t" << "assign vars: " << leftEntry.name << " := " << entryToAssign.name
+         << endl;
     string assignValue = entryToAssign.isConstant ? "#" + entryToAssign.name :
                          entryToAssign.getPosInMemString();
     string command = "\t";
     command.append("mov." + leftEntry.typeChar + "\t");
     command.append(assignValue + ",");
+//    cout << "Emitter::generateAssignOperation\t\tleftEntry.isFunction:" << leftEntry.isFunction << endl;
+    cout << "Emitter::generateAssignOperation\t" + leftEntry.name +
+            "(" + leftEntry.typeChar << ")[" << leftEntry.indexInSymbolTable
+         << "], BPOffset = " << leftEntry.BPOffset << endl;
     command.append(leftEntry.getPosInMemString());
     this->emitString(command);
 }
@@ -96,7 +103,7 @@ vector<Entry> Emitter::convertToSameType(Entry leftEntry, Entry rightEntry) {
 }
 
 // "$" + subprogramEntry.name + "allocSize"     - will be put subprogram alloc size later
-void Emitter::emitSubprogramStart(Entry subprogramEntry) {
+void Emitter::emitSubprogramStart(Entry &subprogramEntry) {
     if (subprogramEntry.isProcedure == false && subprogramEntry.isFunction == false) {
         cout << "Emitter::emitSubprogramStart\t\t\t" << "entry is neither procedure nor a function!";
         exit(-1);
@@ -107,6 +114,7 @@ void Emitter::emitSubprogramStart(Entry subprogramEntry) {
     }
     if (subprogramEntry.isFunction) {
         symbolTable.allocateFunReturnVarPointer(subprogramEntry);
+        cout << "Emitter::emitSubprogramStart\t\t\t" << "dupa " << subprogramEntry.BPOffset << endl;
     }
 }
 
@@ -119,6 +127,8 @@ void Emitter::emitSubprogramLeave() {
 void Emitter::setSubprogramMemAllocSize() {
     Entry subprogramEntry = symbolTable.getEntryByIndex(
             symbolTable.currentlyProcessedSubprogramIndex);
+    subprogramEntry.memAllocSize = localMemAllocSize;
+    localMemAllocSize = 0;
     string subProgramMemAllocSizeVar = "$" + subprogramEntry.name + "allocSize";
     replaceInString(output, subProgramMemAllocSizeVar,
                     to_string(subprogramEntry.memAllocSize));
@@ -142,6 +152,17 @@ int Emitter::callSubprogram(const Entry &subprogramEntry) {
     cout << "Emitter::callSubprogram\t\t\t\t" << "result = " << result << endl;
     return result;
 }
+
+void Emitter::writePointerAddresses() {
+    list<Entry> pointerEntries = symbolTable.assignPointerAddresses();
+    for (Entry pointerEntry : pointerEntries) {
+        cout << "Emitter::writePointerAddresses\t\t" << pointerEntry.name << endl;
+        replaceInString(output, "${" + pointerEntry.name + "-memAddr}",
+                        pointerEntry.posInMemoryString);
+    }
+}
+
+
 
 //Entry Emitter::generateMulOperation(Entry leftEntry, Entry rightEntry) {
 //    return Entry();

@@ -94,7 +94,11 @@ ID {
 
 declarations:
 declarations VAR identifier_list ':' type ';' {
-	symbolTable.addGlobalVariablesWithType(idsTempList, $5);
+	if (isGlobal) {
+		symbolTable.addGlobalVariablesWithType(idsTempList, $5);
+	} else {
+		symbolTable.addLocalDeclaredVariablesWithType(idsTempList, $5);
+	}
 	idsTempList.clear();
 }
 | %empty
@@ -178,6 +182,7 @@ statement
 
 statement:
 variable ASSIGNOP expression {
+	printf("Bison:\t\t\t\t\t\tFound assign operation\n");
 	emitter.generateAssignOperation(symbolTable.getEntryByIndex($1),
 		symbolTable.getEntryByIndex($3));
 }

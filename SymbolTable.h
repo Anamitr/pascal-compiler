@@ -23,6 +23,7 @@ public:
     void assignVariableItsType(Entry& entry, int typeCode);
     list<Entry> assignPointerAddresses();
     void assignSubprogramItsArguments(Entry& subprogramEntry, list<int>& argumentsIndexes);
+    void addLocalDeclaredVariablesWithType(list<int> indexList, int typeCode);
 
     int currentlyProcessedSubprogramIndex = -1;
 
@@ -30,7 +31,7 @@ private:
     vector<Entry> entries;
     list<int> parametersStack;
     int freeMemoryPointer = 0;
-    int BPOffsetPointer = 8;
+    int BPUpperOffsetPointer = 8;
     int BPLowerOffsetPointer = 0;
     int tempVarCounter = 0;
 };

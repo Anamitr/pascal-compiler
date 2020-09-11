@@ -46,6 +46,7 @@ int Emitter::generateSignOperation(int operationCode, Entry leftEntry, Entry rig
 
 int Emitter::generateAssignOperation(Entry leftEntry, Entry rightEntry) {
     Entry entryToAssign = rightEntry;
+//    cout << leftEntry << endl;
 
     if (leftEntry.typeCode != rightEntry.typeCode) {
         Entry convertedRightEntry = generateConversion(
@@ -53,8 +54,8 @@ int Emitter::generateAssignOperation(Entry leftEntry, Entry rightEntry) {
                                                            leftEntry.typeCode), rightEntry);
         entryToAssign = convertedRightEntry;
     }
-    cout << "Emitter::generateAssignOperation\t\t" << "assign vars: " << leftEntry.name << " := " << entryToAssign.name
-         << endl;
+    cout << "Emitter::generateAssignOperation\t\t" << "assign vars: " << leftEntry.name
+         << " := " << entryToAssign.name << endl;
     string assignValue = entryToAssign.isConstant ? "#" + entryToAssign.name :
                          entryToAssign.getPosInMemString();
     string command = "\t";
@@ -70,13 +71,16 @@ int Emitter::generateAssignOperation(Entry leftEntry, Entry rightEntry) {
 }
 
 Entry Emitter::generateConversion(int conversionCode, Entry varToConvert) {
+    string conversionString = Decoder::getConversionStringFromCode(conversionCode);
+    cout << "Emitter::generateConversion\t\t\t" << "Converting " << varToConvert.name
+         << "(" << varToConvert.typeChar << ") " << conversionString << endl;
     string command = "\t";
-    command.append(Decoder::getConversionStringFromCode(conversionCode) + ".");
+    command.append(conversionString + ".");
     command.append(Decoder::getShortTypeSignFromCode(varToConvert.typeCode) + "\t");
-    command.append(to_string(varToConvert.positionInMemory) + ",");
+    command.append(varToConvert.getPosInMemString() + ",");
     Entry resultEntry = symbolTable.allocateTempVarOfType(
             Decoder::getConversionResultType(conversionCode));
-    command.append(to_string(resultEntry.positionInMemory));
+    command.append(resultEntry.getPosInMemString());
     this->emitString(command);
     return resultEntry;
 }
@@ -193,14 +197,12 @@ int Emitter::callSubprogram(Entry &subprogramEntry) {
 void Emitter::writePointerAddresses() {
     list<Entry> pointerEntries = symbolTable.assignPointerAddresses();
     for (Entry pointerEntry : pointerEntries) {
-        cout << "Emitter::writePointerAddresses\t\t\t" << pointerEntry.name << endl;
+        cout << "Emitter::writePointerAddresses\t\t\t" << pointerEntry.name
+             << " - " << pointerEntry.posInMemoryString << endl;
         replaceInString(output, "${" + pointerEntry.name + "-memAddr}",
                         pointerEntry.posInMemoryString);
     }
 }
-
-
-
 
 //Entry Emitter::generateMulOperation(Entry leftEntry, Entry rightEntry) {
 //    return Entry();

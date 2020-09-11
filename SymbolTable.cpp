@@ -34,7 +34,8 @@ void SymbolTable::addGlobalVariablesWithType(list<int> indexList, int typeCode) 
         idsMsg.append(to_string(index) + ", ");
         assignVariableItsType(entries.at(index), typeCode);
         entries[index].positionInMemory = freeMemoryPointer;
-        cout << "\t\t\t\t\t\tVariable " << entries[index].name << " allocated at " << freeMemoryPointer << endl;
+        cout << "SymbolTable::addGlobalVariablesWithType\t\tVariable "
+             << entries[index].name << " allocated at " << freeMemoryPointer << endl;
         freeMemoryPointer += Decoder::getVarTypeSize(typeCode);
     }
     idsMsg.append("\n");
@@ -72,8 +73,8 @@ Entry SymbolTable::allocateTempVarOfType(int typeCode) {
 }
 
 Entry SymbolTable::allocateFunReturnVarPointer(Entry &functionEntry) {
-    functionEntry.BPOffset = BPOffsetPointer;
-    BPOffsetPointer += Decoder::getVarTypeSize(functionEntry.typeCode);
+    functionEntry.BPOffset = BPUpperOffsetPointer;
+    BPUpperOffsetPointer += Decoder::getVarTypeSize(INTEGER);
     cout << "SymbolTable::allocateFunReturnVarPointer\t" + functionEntry.name +
             "(" + functionEntry.typeChar << ")[" << functionEntry.indexInSymbolTable
          << "], BPOffset = " << functionEntry.BPOffset << endl;
@@ -95,8 +96,8 @@ list<Entry> SymbolTable::assignPointerAddresses() {
     list<Entry> result;
     for (int index : this->parametersStack) {
         Entry entry = this->getEntryByIndex(index);
-        entry.BPOffset = this->BPOffsetPointer;
-        BPOffsetPointer += Decoder::getVarTypeSize(INTEGER);
+        entry.BPOffset = this->BPUpperOffsetPointer;
+        BPUpperOffsetPointer += Decoder::getVarTypeSize(INTEGER);
         entry.posInMemoryString = "*BP+" + to_string(entry.BPOffset);
         result.push_back(entry);
         cout << "SymbolTable::assignPointerAddresses\t\t" << entry.name << ", " <<
@@ -105,13 +106,29 @@ list<Entry> SymbolTable::assignPointerAddresses() {
     return result;
 }
 
-void SymbolTable::assignSubprogramItsArguments(Entry& subprogramEntry, list<int>& argumentsIndexes) {
-    subprogramEntry.subprogramArgumentsIndexes = { std::begin(argumentsIndexes),
-                                                   std::end(argumentsIndexes) };
+void SymbolTable::assignSubprogramItsArguments(Entry &subprogramEntry, list<int> &argumentsIndexes) {
+    subprogramEntry.subprogramArgumentsIndexes = {std::begin(argumentsIndexes),
+                                                  std::end(argumentsIndexes)};
     cout << "SymbolTable::assignSubprogramItsArguments\t" << subprogramEntry.name << ": ";
     for (int i : subprogramEntry.subprogramArgumentsIndexes) {
         Entry argument = this->getEntryByIndex(i);
         cout << argument.name << ", ";
     }
     cout << endl;
+}
+
+void SymbolTable::addLocalDeclaredVariablesWithType(list<int> indexList, int typeCode) {
+    int entrySize = Decoder::getVarTypeSize(typeCode);
+    for (int index : indexList) {
+        Entry& localVar = this->getEntryByIndex(index);
+        this->assignVariableItsType(localVar, typeCode);
+        localVar.isLocal = true;
+        localMemAllocSize += entrySize;
+        this->BPLowerOffsetPointer -= entrySize;
+        localVar.BPOffset = this->BPLowerOffsetPointer;
+        cout << "SymbolTable::addLocalDeclaredVariablesWithType\t"
+             << "Allocated local persistent var, name: " << localVar.name << "("
+             << localVar.typeChar <<"), pos in memory: "
+             << localVar.getPosInMemString() << endl;
+    }
 }

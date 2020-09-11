@@ -19,6 +19,7 @@ int SymbolTable::insert(const string name, int typeOfToken, int typeCode) {
     if (typeOfToken == NUM) entry.isConstant = true;
     entry.name = name;
     if (typeCode != -1) assignVariableItsType(entry, typeCode);
+
     int p = entries.size();
     entry.indexInSymbolTable = p;
     entries.push_back(entry);
@@ -131,4 +132,14 @@ void SymbolTable::addLocalDeclaredVariablesWithType(list<int> indexList, int typ
              << localVar.typeChar <<"), pos in memory: "
              << localVar.getPosInMemString() << endl;
     }
+}
+
+int SymbolTable::addControlStructure(int controlStructureType, int controlVariableIndex) {
+    int entryIndex = this->insert("cs" + to_string(this->controlStructureCounter),
+                                  controlStructureType, -1);
+    Entry& entry = this->getEntryByIndex(entryIndex);
+    entry.isControlStructure = true;
+    entry.controlVariableIndex = controlVariableIndex;
+//    entry.controlStructureType = controlStructureType;
+    return entryIndex;
 }

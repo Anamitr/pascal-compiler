@@ -225,4 +225,37 @@ void Emitter::generateLabel(int labelNumber) {
     this->emitString("lab" + to_string(labelNumber) + ":");
 }
 
+void Emitter::generateIfHeader(Entry &ifEntry) {
+    Entry controlVariableEntry = symbolTable.getEntryByIndex(ifEntry.controlVariableIndex);
+    int falseLabelNum = symbolTable.labelCounter++;
+    ifEntry.controlLabels.push_back(falseLabelNum);
+    string command = "\tje.i\t" + controlVariableEntry.getPosInMemString() + ",#0,#lab";
+    command += to_string(falseLabelNum);
+    this->emitString(command);
+}
+
+void Emitter::generateThenJump(int ifStructureIndex) {
+    Entry &ifStructureEntry = symbolTable.getEntryByIndex(ifStructureIndex);
+    cout << "Emitter::generateThenJump\t\t\t" << ifStructureEntry.getNameWithTokenTypeString()
+         << "" << endl;
+    int exitLabelNum = symbolTable.labelCounter++;
+    ifStructureEntry.controlLabels.push_back(exitLabelNum);
+    string command = "\tjump.i\t#lab" + to_string(exitLabelNum);
+    this->emitString(command);
+}
+
+void Emitter::generateElseLabel(int ifStructureIndex) {
+    Entry &ifStructureEntry = symbolTable.getEntryByIndex(ifStructureIndex);
+    cout << "Emitter::generateElseLabel\t\t\t" << ifStructureEntry.getNameWithTokenTypeString()
+         << "" << endl;
+    this->generateLabel(ifStructureEntry.controlLabels.at(0));
+}
+
+void Emitter::generateExitLabel(int ifStructureIndex) {
+    Entry &ifStructureEntry = symbolTable.getEntryByIndex(ifStructureIndex);
+    cout << "Emitter::generateExitLabel\t\t\t" << ifStructureEntry.getNameWithTokenTypeString()
+         << "" << endl;
+    this->generateLabel(ifStructureEntry.controlLabels.at(1));
+}
+
 

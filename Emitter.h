@@ -26,6 +26,12 @@ public:
     void generateJump(int labelNumber);
     void generateLabel(int labelNumber);
 
+//    void generateIfInstruction(Entry& relopResultEntry);
+    void generateIfHeader(Entry& ifStructureEntry);
+    void generateThenJump(int ifStructureIndex);
+    void generateElseLabel(int ifStructureIndex);
+    void generateExitLabel(int ifStructureIndex);
+
     void writePointerAddresses();
     void writeToFile(string outputFileName);
 

@@ -25,6 +25,12 @@ public:
     bool isPointer = false;
     bool isLocal = false;
 
+    bool isControlStructure = false;
+    int controlVariableIndex;
+    vector<int> controlLabels;              // for if first label is for false,
+                                            // second for exit
+//    int controlStructureType;
+
     int memAllocSize = 0;
     int numOfPointers = 0;
 
@@ -35,4 +41,5 @@ public:
 
     friend ostream &operator<<(ostream &os, const Entry &entry);
     string getNameWithTypeString();
+    string getNameWithTokenTypeString();
 };

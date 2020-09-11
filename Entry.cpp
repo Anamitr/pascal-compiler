@@ -43,3 +43,7 @@ string Entry::getNameWithTypeString() {
     return this->name + "(" + this->typeChar + ")";
 }
 
+string Entry::getNameWithTokenTypeString() {
+    return this->name + "(" + Decoder::getTokenTypeStringFromCode(this->tokenTypeCode) + ")";
+}
+

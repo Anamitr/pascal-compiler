@@ -23,9 +23,11 @@ public:
     list<Entry> assignPointerAddresses();
     void assignSubprogramItsArguments(Entry& subprogramEntry, list<int>& argumentsIndexes);
     void addLocalDeclaredVariablesWithType(list<int> indexList, int typeCode);
+    int addControlStructure(int controlStructureType, int controlVariableIndex);
 
     int currentlyProcessedSubprogramIndex = -1;
     int labelCounter = 1;
+    vector<int> ifStructureStack;
 
 private:
     vector<Entry> entries;
@@ -34,5 +36,7 @@ private:
     int BPUpperOffsetPointer = 8;
     int BPLowerOffsetPointer = 0;
     int tempVarCounter = 0;
+    int controlStructureCounter = 0;
+
 };
 

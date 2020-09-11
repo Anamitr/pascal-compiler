@@ -24,7 +24,7 @@ OR "or"
 %%
 
 {RELOPS}        {
-                    printf("Flex\t\t\t\t\t\trelop: '%s'\n%d", yytext, yylval);
+                    printf("Flex\t\t\t\t\t\trelop: '%s'\n", yytext);
                     if (strcmp(yytext,"=") == 0) yylval = EQUAL;
                     if (strcmp(yytext,"<>") == 0) yylval = NOT_EQUAL;
                     if (strcmp(yytext,"<") == 0) yylval = LOWER;

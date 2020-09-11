@@ -198,13 +198,20 @@ variable ASSIGNOP expression {
 }
 | compound_statement
 | IF expression {
-
+	printf("Bison:\t\t\t\t\t\tIF\n");
+	//Entry& relopResultEntry = symbolTable.getEntryByIndex($2);
+	int ifStructureIndex = symbolTable.addControlStructure(IF, $2);
+	Entry& ifStructureEntry = symbolTable.getEntryByIndex(ifStructureIndex);
+	emitter.generateIfHeader(ifStructureEntry);
+	symbolTable.ifStructureStack.push_back(ifStructureIndex);
 } THEN statement {
-
+	printf("Bison:\t\t\t\t\t\tTHEN\n");
+	emitter.generateThenJump(symbolTable.ifStructureStack.back());
 } ELSE {
-
+	printf("Bison:\t\t\t\t\t\tELSE\n");
+	emitter.generateElseLabel(symbolTable.ifStructureStack.back());
 } statement {
-
+	emitter.generateExitLabel(symbolTable.ifStructureStack.back());
 }
 | WHILE {
 

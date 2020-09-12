@@ -78,10 +78,13 @@ Entry Emitter::generateConversion(int conversionCode, Entry varToConvert) {
     return resultEntry;
 }
 
-void Emitter::emitWrite(Entry varToWrite) {
-    string command = "\t";
-    command.append("write." + varToWrite.typeChar + "\t" + to_string(varToWrite.positionInMemory));
-    this->emitString(command);
+void Emitter::emitWrite(list<int> callArguments) {
+    for (int argumentIndex : callArguments) {
+        Entry argumentEntry = symbolTable.getEntryByIndex(argumentIndex);
+        string command = "\twrite." + argumentEntry.typeChar + "\t"
+                + argumentEntry.getPosInMemString();
+        this->emitString(command);
+    }
 }
 
 vector<Entry> Emitter::convertToSameType(Entry leftEntry, Entry rightEntry) {

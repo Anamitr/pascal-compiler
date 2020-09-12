@@ -246,10 +246,11 @@ ID {
 	}
 }
 | ID '(' expression_list ')' {
-	printf("Bison:\t\t\t\t\t\tFound subprogram call: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
+	printf("Bison:\t\t\t\t\t\tFound subprogram call: %s\n",
+	 	symbolTable.getEntryByIndex($1).name.c_str());
 	Entry& subprogramEntry = symbolTable.getEntryByIndex($1);
 	if(strcmp(subprogramEntry.name.c_str(), "write") == 0) {
-		emitter.emitWrite(symbolTable.getEntryByIndex($3));
+		emitter.emitWrite(callArguments);
 	} else if (subprogramEntry.isProcedure == true || subprogramEntry.isFunction == true) {
 		$$ = emitter.callSubprogram(subprogramEntry, callArguments);
 	}
@@ -323,7 +324,7 @@ variable {
 	printf("Bison:\t\t\t\t\t\tFound subprogram call: %s\n", symbolTable.getEntryByIndex($1).name.c_str());
 	Entry& subprogramEntry = symbolTable.getEntryByIndex($1);
 	if(strcmp(subprogramEntry.name.c_str(), "write") == 0) {
-		emitter.emitWrite(symbolTable.getEntryByIndex($3));
+		emitter.emitWrite(callArguments);
 	} else if (subprogramEntry.isProcedure == true || subprogramEntry.isFunction == true) {
 		$$ = emitter.callSubprogram(subprogramEntry, callArguments);
 	}

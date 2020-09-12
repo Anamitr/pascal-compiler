@@ -16,7 +16,7 @@ public:
     Entry generateConversion(int conversionCode, Entry varToConvert);
     vector<Entry> convertToSameType(Entry leftEntry, Entry rightEntry);
 
-    void emitWrite(Entry varToWrite);
+    void emitWrite(list<int> callArguments);
     void emitSubprogramStart(Entry& subprogramEntry);
     void emitSubprogramLeave();
     void setSubprogramMemAllocSize();

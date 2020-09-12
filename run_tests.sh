@@ -26,10 +26,10 @@ function compile_and_test () {
 
 # Arrays are not implemented, so t9 is skipped
 
-programArray=(t0 t1 t2 t3 t4 t5 t6 t7 t8 t10 t11 t12 t13 t14)
-#programArray=(t14)
-should_print_output=false
-#should_print_output=true
+#programArray=(t0 t1 t2 t3 t4 t5 t6 t7 t8 t10 t11 t12 t13 t14 arithtest gcd)
+programArray=(arithtest)
+#should_print_output=false
+should_print_output=true
 
 make clean
 set -e

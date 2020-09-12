@@ -279,9 +279,27 @@ void Emitter::generateWhileCheckJump(Entry &whileStructureEntry) {
 
 void Emitter::generateWhileEnd(Entry &whileStructureEntry) {
     cout << "Emitter::generateWhileEnd\t\t\t" << whileStructureEntry.name << endl;
-    cout << "fenek\t" << whileStructureEntry.controlLabels.at(0)
-         << "\t" << whileStructureEntry.controlLabels.at(0) << endl;
     this->generateJump(whileStructureEntry.controlLabels.at(1));
     this->generateLabel(whileStructureEntry.controlLabels.at(0));
+}
+
+int Emitter::generateNOTOperation(Entry &entryToBeNegated) {
+    cout << "Emitter::generateNOTOperation\t\t\t" << entryToBeNegated.name << endl;
+    int firstLabel = symbolTable.labelCounter++;
+    int secondLabel = symbolTable.labelCounter++;
+    Entry resultEntryIndex = symbolTable.allocateTempVarOfType(INTEGER);
+
+    string isEqualCommand = "\tje.i\t" + entryToBeNegated.getPosInMemString()
+            + ",#0,#lab" + to_string(firstLabel);
+    this->emitString(isEqualCommand);
+    string returnZeroCommand = "\tmov.i\t#0," + resultEntryIndex.getPosInMemString();
+    this->emitString(returnZeroCommand);
+    this->generateJump(secondLabel);
+    this->generateLabel(firstLabel);
+    string returnOneCommand = "\tmov.i\t#1," + resultEntryIndex.getPosInMemString();
+    this->emitString(returnOneCommand);
+    this->generateLabel(secondLabel);
+
+    return resultEntryIndex.indexInSymbolTable;
 }
 

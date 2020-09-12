@@ -125,6 +125,8 @@ string Decoder::getRelopCommandStringFromCode(int relopCode) {
             return "je";
         case LOWER:
             return "jl";
+        case HIGHER:
+            return "jg";
         default:
             cout << "!-Decoder::getRelopCommandStringFromCode\t" << "No such relop sign "
                  << relopCode << "!" << endl;

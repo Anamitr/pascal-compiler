@@ -336,7 +336,11 @@ variable {
 	$$ = $2;
 	printf("Bison:\t\t\t\t\t\t(expression), result index = %d\n", $$);
 }
-| NOT factor {}
+| NOT factor {
+	Entry& entryToBeNegated = symbolTable.getEntryByIndex($2);
+	printf("Bison:\t\t\t\t\t\tNOT, factor = %d\n", $2);
+	$$ = emitter.generateNOTOperation(entryToBeNegated);
+}
 %%
 int yyerror(const char *s)
 {

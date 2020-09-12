@@ -37,6 +37,9 @@ public:
     void generateWhileCheckJump(Entry& whileStructureEntry);
     void generateWhileEnd(Entry& whileStructureEntry);
 
+    // NOT
+    int generateNOTOperation(Entry& entryToBeNegated);
+
     void writePointerAddresses();
     void writeToFile(string outputFileName);
 

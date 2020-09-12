@@ -29,8 +29,8 @@ OR "or"
                     if (strcmp(yytext,"<>") == 0) yylval = NOT_EQUAL;
                     if (strcmp(yytext,"<") == 0) yylval = LOWER;
                     if (strcmp(yytext,"<=") == 0) yylval = LOWER_OR_EQUAL;
-                    if (strcmp(yytext,">=") == 0) yylval = HIGHER;
-                    if (strcmp(yytext,">") == 0) yylval = HIGHER_OR_EQUAL;
+                    if (strcmp(yytext,">=") == 0) yylval = HIGHER_OR_EQUAL;
+                    if (strcmp(yytext,">") == 0) yylval = HIGHER;
                     return RELOP;
                 }
 {MULOPS}        {

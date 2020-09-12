@@ -2,7 +2,6 @@
 
 #include "global.h"
 #include "Decoder.h"
-//#include "Entry.h"
 
 using namespace std;
 
@@ -10,21 +9,31 @@ class Entry;
 
 class Emitter {
 public:
+    // Plain emit
     void emitString(string stringToEmit);
-    int generateSignOperation(int operationCode, Entry leftEntry, Entry rightEntry);
-    int generateAssignOperation(Entry leftEntry, Entry rightEntry);
+
+    // Type conversion
     Entry generateConversion(int conversionCode, Entry varToConvert);
     vector<Entry> convertToSameType(Entry leftEntry, Entry rightEntry);
 
+    // Write built-in function
     void emitWrite(list<int> callArguments);
+
+    // Double sided operators
+    int generateSignOperation(int operationCode, Entry leftEntry, Entry rightEntry);
+    int generateAssignOperation(Entry leftEntry, Entry rightEntry);
+    int generateRelop(int relopCode, Entry& leftEntry, Entry& rightEntry);
+
+    // Label
+    void generateJump(int labelNumber);
+    void generateLabel(int labelNumber);
+
+    // Subprogram
     void emitSubprogramStart(Entry& subprogramEntry);
     void emitSubprogramLeave();
     void setSubprogramMemAllocSize();
     int callSubprogram(Entry& subprogramEntry, const list<int>& callArguments);
     int callSubprogram(Entry& subprogramEntry);
-    int generateRelop(int relopCode, Entry& leftEntry, Entry& rightEntry);
-    void generateJump(int labelNumber);
-    void generateLabel(int labelNumber);
 
     // IF structure generation
     void generateIfHeader(Entry& ifStructureEntry);
@@ -40,7 +49,10 @@ public:
     // NOT
     int generateNOTOperation(Entry& entryToBeNegated);
 
+    // Assign pointer addresses after subprogram declarations
     void writePointerAddresses();
+
+    // Write final output
     void writeToFile(string outputFileName);
 
 private:

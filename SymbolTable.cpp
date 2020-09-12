@@ -44,6 +44,7 @@ void SymbolTable::addGlobalVariablesWithType(list<int> indexList, int typeCode) 
 }
 
 Entry &SymbolTable::getEntryByIndex(int index) {
+    cout << "SymbolTable::getEntryByIndex\t\t\t" << index << endl;
     return entries.at(index);
 }
 
@@ -130,6 +131,7 @@ void SymbolTable::addLocalDeclaredVariablesWithType(list<int> indexList, int typ
 }
 
 int SymbolTable::addControlStructure(int controlStructureType, int controlVariableIndex) {
+    cout << "SymbolTable::addControlStructure\t\t\t" << endl;
     int entryIndex = this->insert("cs" + to_string(this->controlStructureCounter),
                                   controlStructureType, -1);
     Entry& entry = this->getEntryByIndex(entryIndex);

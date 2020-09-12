@@ -256,5 +256,32 @@ void Emitter::generateExitLabel(int ifStructureIndex) {
     cout << "Emitter::generateExitLabel\t\t\t" << ifStructureEntry.getNameWithTokenTypeString()
          << "" << endl;
     this->generateLabel(ifStructureEntry.controlLabels.at(1));
+    symbolTable.controlStructureStack.pop_back();
+}
+
+void Emitter::generateWhileHeader(Entry &whileStructureEntry) {
+    cout << "Emitter::generateWhileHeader\t\t\t" << whileStructureEntry.name << endl;
+    int exitWhileLabel = symbolTable.labelCounter++;
+    whileStructureEntry.controlLabels.push_back(exitWhileLabel);
+    int beginningWhileLabel = symbolTable.labelCounter++;
+    whileStructureEntry.controlLabels.push_back(beginningWhileLabel);
+    this->generateLabel(beginningWhileLabel);
+}
+
+void Emitter::generateWhileCheckJump(Entry &whileStructureEntry) {
+    cout << "Emitter::generateWhileCheckJump\t\t\t" << whileStructureEntry.name << endl;
+    Entry controlVariableEntry = symbolTable
+            .getEntryByIndex(whileStructureEntry.controlVariableIndex);
+    string command = "\tje.i\t" + controlVariableEntry.getPosInMemString()
+                     + ",#0,#lab" + to_string(whileStructureEntry.controlLabels.at(0));
+    this->emitString(command);
+}
+
+void Emitter::generateWhileEnd(Entry &whileStructureEntry) {
+    cout << "Emitter::generateWhileEnd\t\t\t" << whileStructureEntry.name << endl;
+    cout << "fenek\t" << whileStructureEntry.controlLabels.at(0)
+         << "\t" << whileStructureEntry.controlLabels.at(0) << endl;
+    this->generateJump(whileStructureEntry.controlLabels.at(1));
+    this->generateLabel(whileStructureEntry.controlLabels.at(0));
 }
 

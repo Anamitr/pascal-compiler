@@ -22,11 +22,11 @@ public:
     list<Entry> assignPointerAddresses();
     void assignSubprogramItsArguments(Entry& subprogramEntry, list<int>& argumentsIndexes);
     void addLocalDeclaredVariablesWithType(list<int> indexList, int typeCode);
-    int addControlStructure(int controlStructureType, int controlVariableIndex);
+    int addControlStructure(int controlStructureType, int controlVariableIndex = -1);
 
     int currentlyProcessedSubprogramIndex = -1;
     int labelCounter = 1;
-    vector<int> ifStructureStack;
+    vector<int> controlStructureStack;
 
 private:
     vector<Entry> entries;

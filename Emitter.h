@@ -26,11 +26,16 @@ public:
     void generateJump(int labelNumber);
     void generateLabel(int labelNumber);
 
-    // If structure generation
+    // IF structure generation
     void generateIfHeader(Entry& ifStructureEntry);
     void generateThenJump(int ifStructureIndex);
     void generateElseLabel(int ifStructureIndex);
     void generateExitLabel(int ifStructureIndex);
+
+    // WHILE structure generation
+    void generateWhileHeader(Entry& whileStructureEntry);
+    void generateWhileCheckJump(Entry& whileStructureEntry);
+    void generateWhileEnd(Entry& whileStructureEntry);
 
     void writePointerAddresses();
     void writeToFile(string outputFileName);

@@ -95,6 +95,8 @@ string Decoder::getTokenTypeStringFromCode(int tokenTypeCode) {
             return "NUM";
         case IF:
             return "IF";
+        case WHILE:
+            return "WHILE";
         default:
             cout << "No such tokenTypeCode: " << tokenTypeCode << "!\n";
             exit(-1);

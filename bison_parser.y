@@ -198,27 +198,36 @@ variable ASSIGNOP expression {
 }
 | compound_statement
 | IF expression {
-	printf("Bison:\t\t\t\t\t\tIF\n");
-	//Entry& relopResultEntry = symbolTable.getEntryByIndex($2);
+	printf("Bison:\t\t\t\t\t\tIF, expression index = %d\n", $2);
 	int ifStructureIndex = symbolTable.addControlStructure(IF, $2);
 	Entry& ifStructureEntry = symbolTable.getEntryByIndex(ifStructureIndex);
 	emitter.generateIfHeader(ifStructureEntry);
-	symbolTable.ifStructureStack.push_back(ifStructureIndex);
+	symbolTable.controlStructureStack.push_back(ifStructureIndex);
 } THEN statement {
 	printf("Bison:\t\t\t\t\t\tTHEN\n");
-	emitter.generateThenJump(symbolTable.ifStructureStack.back());
+	emitter.generateThenJump(symbolTable.controlStructureStack.back());
 } ELSE {
 	printf("Bison:\t\t\t\t\t\tELSE\n");
-	emitter.generateElseLabel(symbolTable.ifStructureStack.back());
+	emitter.generateElseLabel(symbolTable.controlStructureStack.back());
 } statement {
-	emitter.generateExitLabel(symbolTable.ifStructureStack.back());
+	emitter.generateExitLabel(symbolTable.controlStructureStack.back());
 }
 | WHILE {
-
+	printf("Bison:\t\t\t\t\t\tWHILE\n");
+	int whileEntryIndex = symbolTable.addControlStructure(WHILE);
+	Entry& whileEntry = symbolTable.getEntryByIndex(whileEntryIndex);
+	emitter.generateWhileHeader(whileEntry);
+	symbolTable.controlStructureStack.push_back(whileEntryIndex);
 } expression DO  {
-
+	printf("Bison:\t\t\t\t\t\tDO, expression index = %d\n", $3);
+	Entry& whileEntry = symbolTable.getEntryByIndex(
+			symbolTable.controlStructureStack.back());
+	whileEntry.controlVariableIndex = $3;
+	emitter.generateWhileCheckJump(whileEntry);
 }statement {
-
+	Entry& whileEntry = symbolTable.getEntryByIndex(
+			symbolTable.controlStructureStack.back());
+	emitter.generateWhileEnd(whileEntry);
 }
 
 variable:
@@ -256,15 +265,22 @@ expression {
 }
 
 expression:
-simple_expression {$$ = $1;}
+simple_expression {
+	$$ = $1;
+	printf("Bison:\t\t\t\t\t\texpression, result index = %d\n", $$);
+}
 | simple_expression RELOP simple_expression {
 	Entry& leftEntry = symbolTable.getEntryByIndex($1);
 	Entry& rightEntry = symbolTable.getEntryByIndex($3);
 	$$ = emitter.generateRelop($2, leftEntry, rightEntry);
+	printf("Bison:\t\t\t\t\t\tRELOP, result index = %d\n", $$);
 }
 
 simple_expression:
-term {$$ = $1;}
+term {
+	$$ = $1;
+	printf("Bison:\t\t\t\t\t\tsimple_expression, result index = %d\n", $$);
+}
 | SIGN term
 | simple_expression SIGN term {
 	printf("Bison:\t\t\t\t\t\tsimple_expression: %d %d %d\n", $1, $2, $3);
@@ -282,7 +298,10 @@ term {$$ = $1;}
 }
 
 term:
-factor {$$ = $1;}
+factor {
+	$$ = $1;
+	printf("Bison:\t\t\t\t\t\tfactor, result index = %d\n", $$);
+}
 | term MULOP factor {
 	printf("Bison:\t\t\t\t\t\tGot mulop operation between %d and %d\n", $1, $3);
 	Entry leftEntry = symbolTable.getEntryByIndex($1);
@@ -313,7 +332,10 @@ variable {
 | NUM {
 //	printf("Bison:\t\t\t\tFound NUM: %d\n", $1);
 }
-| '(' expression ')' {$$ = $2;}
+| '(' expression ')' {
+	$$ = $2;
+	printf("Bison:\t\t\t\t\t\t(expression), result index = %d\n", $$);
+}
 | NOT factor {}
 %%
 int yyerror(const char *s)

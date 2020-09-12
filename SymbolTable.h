@@ -25,6 +25,7 @@ public:
     int addControlStructure(int controlStructureType, int controlVariableIndex = -1);
 
     int currentlyProcessedSubprogramIndex = -1;
+    int localMemAllocSize = 0;
     int labelCounter = 1;
     vector<int> controlStructureStack;
 
@@ -36,6 +37,5 @@ private:
     int BPLowerOffsetPointer = 0;
     int tempVarCounter = 0;
     int controlStructureCounter = 0;
-
 };
 

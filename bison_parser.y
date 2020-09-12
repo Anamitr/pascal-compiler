@@ -5,11 +5,10 @@
 #include <string.h>
 
 std::list<int> idsTempList;
-std::list<int> callArguments;
-std::list<int> paramterList;
+std::list<int> paramterList;		// used in function definitions
+std::list<int> callArguments;		// used in function calls
 
 bool isGlobal = true;
-int localMemAllocSize = 0;
 
 %}
 
@@ -75,7 +74,6 @@ int localMemAllocSize = 0;
 program:
 PROGRAM_TOKEN ID '(' identifier_list ')'
  ';' {
-	//printf("Bison:\t\t\t\tprogram\n");
 	emitter.emitString("\tjump.i	#lab0");
 	idsTempList.clear();
 }
@@ -122,6 +120,7 @@ INTEGER {}
 
 subprogram_declarations:
 subprogram_declarations subprogram_declaration ';' {
+	emitter.setSubprogramMemAllocSize();
 	emitter.emitSubprogramLeave();
 	symbolTable.currentlyProcessedSubprogramIndex = -1;
 }
@@ -134,9 +133,7 @@ subprogram_head:
 FUNCTION ID arguments ':' standard_type ';' {
 	Entry& functionEntry = symbolTable.getEntryByIndex($2);
 	functionEntry.isFunction = true;
-//	functionEntry.isPointer = true;
 	functionEntry.assignType($5);
-//	symbolTable.allocateFunReturnVarPointer(functionEntry);
 	symbolTable.assignSubprogramItsArguments(functionEntry, paramterList);
 	paramterList.clear();
 	emitter.emitSubprogramStart(functionEntry);
@@ -157,7 +154,6 @@ arguments:
 '(' parameter_list ')' {
 	printf("Bison:\t\t\t\t\t\tGot parameter list, currently processed subprogram index = %d\n",
 		symbolTable.currentlyProcessedSubprogramIndex);
-//	printf("Bison:\t\t\t\t\t\t");
 }
 | %empty
 
@@ -193,9 +189,7 @@ variable ASSIGNOP expression {
 	emitter.generateAssignOperation(symbolTable.getEntryByIndex($1),
 		symbolTable.getEntryByIndex($3));
 }
-| procedure_statement {
-
-}
+| procedure_statement
 | compound_statement
 | IF expression {
 	printf("Bison:\t\t\t\t\t\tIF, expression index = %d\n", $2);
@@ -205,7 +199,7 @@ variable ASSIGNOP expression {
 	symbolTable.controlStructureStack.push_back(ifStructureIndex);
 } THEN statement {
 	printf("Bison:\t\t\t\t\t\tTHEN\n");
-	emitter.generateThenJump(symbolTable.controlStructureStack.back());
+	emitter.generateExitJump(symbolTable.controlStructureStack.back());
 } ELSE {
 	printf("Bison:\t\t\t\t\t\tELSE\n");
 	emitter.generateElseLabel(symbolTable.controlStructureStack.back());
@@ -254,7 +248,7 @@ ID {
 	} else if (strcmp(subprogramEntry.name.c_str(), "read") == 0) {
 		emitter.emitRead(callArguments);
 	} else if (subprogramEntry.isProcedure == true || subprogramEntry.isFunction == true) {
-		$$ = emitter.callSubprogram(subprogramEntry, callArguments);
+		$$ = emitter.callSubprogramWitArguments(subprogramEntry, callArguments);
 	}
 	callArguments.clear();
 }
@@ -330,7 +324,7 @@ variable {
 	} else if (strcmp(subprogramEntry.name.c_str(), "read") == 0) {
 		emitter.emitRead(callArguments);
 	} else if (subprogramEntry.isProcedure == true || subprogramEntry.isFunction == true) {
-		$$ = emitter.callSubprogram(subprogramEntry, callArguments);
+		$$ = emitter.callSubprogramWitArguments(subprogramEntry, callArguments);
 	}
 	callArguments.clear();
 }

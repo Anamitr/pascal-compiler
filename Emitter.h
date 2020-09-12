@@ -33,12 +33,12 @@ public:
     void emitSubprogramStart(Entry& subprogramEntry);
     void emitSubprogramLeave();
     void setSubprogramMemAllocSize();
-    int callSubprogram(Entry& subprogramEntry, const list<int>& callArguments);
+    int callSubprogramWitArguments(Entry& subprogramEntry, const list<int>& callArguments);
     int callSubprogram(Entry& subprogramEntry);
 
     // IF structure generation
     void generateIfHeader(Entry& ifStructureEntry);
-    void generateThenJump(int ifStructureIndex);
+    void generateExitJump(int ifStructureIndex);
     void generateElseLabel(int ifStructureIndex);
     void generateExitLabel(int ifStructureIndex);
 

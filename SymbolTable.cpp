@@ -59,7 +59,7 @@ Entry SymbolTable::allocateTempVarOfType(int typeCode) {
         entry.typeCode = typeCode;
         entry.isLocal = true;
         int entrySize = Decoder::getVarTypeSize(typeCode);
-        localMemAllocSize += entrySize;
+        this->localMemAllocSize += entrySize;
         this->BPLowerOffsetPointer -= entrySize;
         entry.BPOffset = this->BPLowerOffsetPointer;
         cout << "SymbolTable::allocateTempVarOfType\t\t" << "Allocated local temp var name: "
@@ -120,7 +120,7 @@ void SymbolTable::addLocalDeclaredVariablesWithType(list<int> indexList, int typ
         localVar.assignType(typeCode);
 //        this->assignVariableItsType(localVar, typeCode);
         localVar.isLocal = true;
-        localMemAllocSize += entrySize;
+        this->localMemAllocSize += entrySize;
         this->BPLowerOffsetPointer -= entrySize;
         localVar.BPOffset = this->BPLowerOffsetPointer;
         cout << "SymbolTable::addLocalDeclaredVariablesWithType\t"

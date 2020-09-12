@@ -8,7 +8,7 @@ using namespace std;
 class Entry {
 public:
     int indexInSymbolTable;
-    int tokenTypeCode;
+    int tokenTypeCode;          // exp. NUM, ID, IF, WHILE
     int typeCode;
 
     int positionInMemory = -1;
@@ -29,7 +29,6 @@ public:
     int controlVariableIndex;
     vector<int> controlLabels;              // for if first label is for false,
                                             // second for exit
-//    int controlStructureType;
 
     int memAllocSize = 0;
     int numOfPointers = 0;

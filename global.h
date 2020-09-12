@@ -27,4 +27,3 @@ extern SymbolTable symbolTable;
 extern Emitter emitter;
 
 extern bool isGlobal;
-extern int localMemAllocSize;

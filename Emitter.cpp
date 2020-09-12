@@ -129,7 +129,6 @@ void Emitter::emitSubprogramStart(Entry &subprogramEntry) {
 }
 
 void Emitter::emitSubprogramLeave() {
-    setSubprogramMemAllocSize();
     string command = "\tleave\n\treturn";
     this->emitString(command);
 }
@@ -137,16 +136,16 @@ void Emitter::emitSubprogramLeave() {
 void Emitter::setSubprogramMemAllocSize() {
     Entry subprogramEntry = symbolTable.getEntryByIndex(
             symbolTable.currentlyProcessedSubprogramIndex);
-    subprogramEntry.memAllocSize = localMemAllocSize;
-    localMemAllocSize = 0;
+    subprogramEntry.memAllocSize = symbolTable.localMemAllocSize;
+    symbolTable.localMemAllocSize = 0;
     string subProgramMemAllocSizeVar = "$" + subprogramEntry.name + "allocSize";
     replaceInString(output, subProgramMemAllocSizeVar,
                     to_string(subprogramEntry.memAllocSize));
 }
 
-int Emitter::callSubprogram(Entry &subprogramEntry, const list<int> &callArguments) {
+int Emitter::callSubprogramWitArguments(Entry &subprogramEntry, const list<int> &callArguments) {
     vector<int> callArgumentsVector{std::begin(callArguments), std::end(callArguments)};
-    cout << "Emitter::callSubprogram\t\t\t\t" << "calling subprogram " << subprogramEntry.name
+    cout << "Emitter::callSubprogramWitArguments\t\t\t\t" << "calling subprogram " << subprogramEntry.name
          << " with arguments (" << callArgumentsVector.size() << "):" << endl;
 
     for (int i = 0; i < callArgumentsVector.size(); i++) {
@@ -156,7 +155,7 @@ int Emitter::callSubprogram(Entry &subprogramEntry, const list<int> &callArgumen
         Entry correspondingPointerEntry = symbolTable.getEntryByIndex(subprogramEntry
                                                                               .subprogramArgumentsIndexes.at(i));
         if (argEntry.typeCode != correspondingPointerEntry.typeCode) {
-            cout << "Emitter::callSubprogram\t\t\t\t" << "Argument type doesn't match, got "
+            cout << "Emitter::callSubprogramWitArguments\t\t\t\t" << "Argument type doesn't match, got "
                  << argEntry.typeChar << ", expected " << correspondingPointerEntry.typeChar << endl;
             argEntry = this->generateConversion(Decoder::getConversionCodeFromEntriesTypes(
                     argEntry.typeCode, correspondingPointerEntry.typeCode), argEntry);
@@ -248,9 +247,9 @@ void Emitter::generateIfHeader(Entry &ifEntry) {
     this->emitString(command);
 }
 
-void Emitter::generateThenJump(int ifStructureIndex) {
+void Emitter::generateExitJump(int ifStructureIndex) {
     Entry &ifStructureEntry = symbolTable.getEntryByIndex(ifStructureIndex);
-    cout << "Emitter::generateThenJump\t\t\t" << ifStructureEntry.getNameWithTokenTypeString()
+    cout << "Emitter::generateExitJump\t\t\t" << ifStructureEntry.getNameWithTokenTypeString()
          << "" << endl;
     int exitLabelNum = symbolTable.labelCounter++;
     ifStructureEntry.controlLabels.push_back(exitLabelNum);
@@ -275,6 +274,7 @@ void Emitter::generateExitLabel(int ifStructureIndex) {
 
 void Emitter::generateWhileHeader(Entry &whileStructureEntry) {
     cout << "Emitter::generateWhileHeader\t\t\t" << whileStructureEntry.name << endl;
+
     int exitWhileLabel = symbolTable.labelCounter++;
     whileStructureEntry.controlLabels.push_back(exitWhileLabel);
     int beginningWhileLabel = symbolTable.labelCounter++;
@@ -286,14 +286,19 @@ void Emitter::generateWhileCheckJump(Entry &whileStructureEntry) {
     cout << "Emitter::generateWhileCheckJump\t\t\t" << whileStructureEntry.name << endl;
     Entry controlVariableEntry = symbolTable
             .getEntryByIndex(whileStructureEntry.controlVariableIndex);
+
+    // if controlVariable = 0 then go to firstLabel which is exitLabel
     string command = "\tje.i\t" + controlVariableEntry.getPosInMemString()
                      + ",#0,#lab" + to_string(whileStructureEntry.controlLabels.at(0));
+
     this->emitString(command);
 }
 
 void Emitter::generateWhileEnd(Entry &whileStructureEntry) {
     cout << "Emitter::generateWhileEnd\t\t\t" << whileStructureEntry.name << endl;
+    // jump to beginning (second label)
     this->generateJump(whileStructureEntry.controlLabels.at(1));
+    // generate exit label
     this->generateLabel(whileStructureEntry.controlLabels.at(0));
 }
 

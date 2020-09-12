@@ -82,7 +82,16 @@ void Emitter::emitWrite(list<int> callArguments) {
     for (int argumentIndex : callArguments) {
         Entry argumentEntry = symbolTable.getEntryByIndex(argumentIndex);
         string command = "\twrite." + argumentEntry.typeChar + "\t"
-                + argumentEntry.getPosInMemString();
+                         + argumentEntry.getPosInMemString();
+        this->emitString(command);
+    }
+}
+
+void Emitter::emitRead(list<int> callArguments) {
+    for (int argumentIndex : callArguments) {
+        Entry argumentEntry = symbolTable.getEntryByIndex(argumentIndex);
+        string command = "\tread." + argumentEntry.typeChar + "\t"
+                         + argumentEntry.getPosInMemString();
         this->emitString(command);
     }
 }
@@ -142,7 +151,7 @@ int Emitter::callSubprogram(Entry &subprogramEntry, const list<int> &callArgumen
 
     for (int i = 0; i < callArgumentsVector.size(); i++) {
         Entry argEntry = symbolTable.getEntryByIndex(callArgumentsVector.at(i));
-        int addrToPush = -9999;
+        string addrToPush;
 
         Entry correspondingPointerEntry = symbolTable.getEntryByIndex(subprogramEntry
                                                                               .subprogramArgumentsIndexes.at(i));
@@ -156,11 +165,11 @@ int Emitter::callSubprogram(Entry &subprogramEntry, const list<int> &callArgumen
         if (argEntry.isConstant) {
             Entry tempVar = symbolTable.allocateTempVarOfType(argEntry.typeCode);
             this->generateAssignOperation(tempVar, argEntry);
-            addrToPush = tempVar.positionInMemory;
+            addrToPush = tempVar.getPosInMemString();
         } else {
-            addrToPush = argEntry.positionInMemory;
+            addrToPush = argEntry.getPosInMemString();
         }
-        this->emitString("\tpush.i\t#" + to_string(addrToPush));
+        this->emitString("\tpush.i\t#" + addrToPush);
         subprogramEntry.numOfPointers += 1;
     }
     cout << endl;
@@ -182,6 +191,7 @@ int Emitter::callSubprogram(Entry &subprogramEntry) {
     if (subprogramEntry.numOfPointers != 0) {
         this->emitString("\tincsp.i\t#" + to_string(subprogramEntry.numOfPointers *
                                                     Decoder::getVarTypeSize(INTEGER)));
+        subprogramEntry.numOfPointers = 0;
     }
     cout << "Emitter::callSubprogram\t\t\t\t" << "result = " << result << endl;
     return result;
@@ -195,6 +205,7 @@ void Emitter::writePointerAddresses() {
         replaceInString(output, "${" + pointerEntry.name + "-memAddr}",
                         pointerEntry.posInMemoryString);
     }
+    replaceInString(output, "#*", "");
 }
 
 // returns entry index where operation result is stored
@@ -293,7 +304,7 @@ int Emitter::generateNOTOperation(Entry &entryToBeNegated) {
     Entry resultEntryIndex = symbolTable.allocateTempVarOfType(INTEGER);
 
     string isEqualCommand = "\tje.i\t" + entryToBeNegated.getPosInMemString()
-            + ",#0,#lab" + to_string(firstLabel);
+                            + ",#0,#lab" + to_string(firstLabel);
     this->emitString(isEqualCommand);
     string returnZeroCommand = "\tmov.i\t#0," + resultEntryIndex.getPosInMemString();
     this->emitString(returnZeroCommand);

@@ -251,6 +251,8 @@ ID {
 	Entry& subprogramEntry = symbolTable.getEntryByIndex($1);
 	if(strcmp(subprogramEntry.name.c_str(), "write") == 0) {
 		emitter.emitWrite(callArguments);
+	} else if (strcmp(subprogramEntry.name.c_str(), "read") == 0) {
+		emitter.emitRead(callArguments);
 	} else if (subprogramEntry.isProcedure == true || subprogramEntry.isFunction == true) {
 		$$ = emitter.callSubprogram(subprogramEntry, callArguments);
 	}
@@ -325,6 +327,8 @@ variable {
 	Entry& subprogramEntry = symbolTable.getEntryByIndex($1);
 	if(strcmp(subprogramEntry.name.c_str(), "write") == 0) {
 		emitter.emitWrite(callArguments);
+	} else if (strcmp(subprogramEntry.name.c_str(), "read") == 0) {
+		emitter.emitRead(callArguments);
 	} else if (subprogramEntry.isProcedure == true || subprogramEntry.isFunction == true) {
 		$$ = emitter.callSubprogram(subprogramEntry, callArguments);
 	}

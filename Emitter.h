@@ -16,8 +16,9 @@ public:
     Entry generateConversion(int conversionCode, Entry varToConvert);
     vector<Entry> convertToSameType(Entry leftEntry, Entry rightEntry);
 
-    // Write built-in function
+    // Input-output built-in functions
     void emitWrite(list<int> callArguments);
+    void emitRead(list<int> callArguments);
 
     // Double sided operators
     int generateSignOperation(int operationCode, Entry leftEntry, Entry rightEntry);

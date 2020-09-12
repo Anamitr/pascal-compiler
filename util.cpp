@@ -5,10 +5,19 @@
 #include "util.h"
 
 bool replaceInString(std::string& str, const std::string& from, const std::string& to) {
-    size_t start_pos = str.find(from);
-    if(start_pos == std::string::npos)
-        return false;
-    str.replace(start_pos, from.length(), to);
+
+    size_t index = 0;
+    while (true) {
+        /* Locate the substring to replace. */
+        index = str.find(from, index);
+        if (index == std::string::npos) break;
+
+        /* Make the replacement. */
+        str.replace(index, from.length(), to);
+
+        /* Advance index forward so the next iteration doesn't pick it up as well. */
+        index += from.length();
+    }
     return true;
 }
 

@@ -275,7 +275,10 @@ term {$$ = $1;}
 	$$ = resultIndex;
 }
 | simple_expression OR term {
-
+	Entry leftEntry = symbolTable.getEntryByIndex($1);
+        Entry rightEntry = symbolTable.getEntryByIndex($3);
+        int resultIndex = emitter.generateSignOperation(OR, leftEntry, rightEntry);
+        $$ = resultIndex;
 }
 
 term:

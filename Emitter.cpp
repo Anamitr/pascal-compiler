@@ -14,7 +14,6 @@ void Emitter::writeToFile(string outputFileName) {
 }
 
 int Emitter::generateSignOperation(int operationCode, Entry leftEntry, Entry rightEntry) {
-    cout << "fenek operationCode" << operationCode << endl;
     string command = "\t";
     string operation = Decoder::decodeSign(operationCode);
     cout << "Emitter::generateSignOperation\t\t\t" << "Got operation: " << operation
@@ -258,5 +257,4 @@ void Emitter::generateExitLabel(int ifStructureIndex) {
          << "" << endl;
     this->generateLabel(ifStructureEntry.controlLabels.at(1));
 }
-
 

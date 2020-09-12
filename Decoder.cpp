@@ -17,6 +17,8 @@ string Decoder::decodeSign(int signCode) {
             return "mod";
         case AND:
             return "and";
+        case OR:
+            return "or";
         default:
             cout << "No such sign!" << endl;
             exit(-1);

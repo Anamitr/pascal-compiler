@@ -26,7 +26,7 @@ public:
     void generateJump(int labelNumber);
     void generateLabel(int labelNumber);
 
-//    void generateIfInstruction(Entry& relopResultEntry);
+    // If structure generation
     void generateIfHeader(Entry& ifStructureEntry);
     void generateThenJump(int ifStructureIndex);
     void generateElseLabel(int ifStructureIndex);

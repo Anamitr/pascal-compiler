@@ -43,12 +43,6 @@ void SymbolTable::addGlobalVariablesWithType(list<int> indexList, int typeCode) 
     cout << idsMsg;
 }
 
-
-//void SymbolTable::assignVariableItsType(Entry &entry, int typeCode) {
-//    entry.typeCode = typeCode;
-//    entry.typeChar = Decoder::getShortTypeSignFromCode(typeCode);
-//}
-
 Entry &SymbolTable::getEntryByIndex(int index) {
     return entries.at(index);
 }

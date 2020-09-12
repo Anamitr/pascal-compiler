@@ -281,6 +281,7 @@ term {$$ = $1;}
 term:
 factor {$$ = $1;}
 | term MULOP factor {
+	printf("Bison:\t\t\t\t\t\tGot mulop operation between %d and %d\n", $1, $3);
 	Entry leftEntry = symbolTable.getEntryByIndex($1);
         Entry rightEntry = symbolTable.getEntryByIndex($3);
         int resultIndex = emitter.generateSignOperation($2, leftEntry, rightEntry);
@@ -309,7 +310,7 @@ variable {
 | NUM {
 //	printf("Bison:\t\t\t\tFound NUM: %d\n", $1);
 }
-| '(' expression ')' {}
+| '(' expression ')' {$$ = $2;}
 | NOT factor {}
 %%
 int yyerror(const char *s)

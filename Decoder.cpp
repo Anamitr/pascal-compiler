@@ -3,6 +3,7 @@
 
 
 string Decoder::decodeSign(int signCode) {
+    cout << "Decoder::decodeSign\t\t\t\t\tsignCode: " << signCode << endl;
     switch (signCode) {
         case PLUS:
             return "add";

@@ -1,7 +1,6 @@
 %{
 #include <stdlib.h>
 #include "global.h"
-//#include "parser.h"
 
 int tokenval;
 int lineno = 0;
@@ -11,18 +10,24 @@ int lookupOrInstall(int typeOfToken, int typeCode);
 %option noyywrap
 %option yylineno
 
-digit [0-9]
-letter [a-zA-Z_]
-NEWLINE "\n"
-WHITE [ \t]+
-RELOPS "="|"<>"|"<"|"<="|">="|">"
-MULOPS "*"|"/"|"div"|"mod"|"and"
-SIGNS "+"|"-"
-ASSIGN ":="
-OR "or"
+digit           [0-9]
+letter          [a-zA-Z_]
+DELIMITER       [ \t]
+WHITE_SPACE     {DELIMITER}+
+NEWLINE         "\n"
+RELOPS          "="|"<>"|"<"|"<="|">="|">"
+MULOPS          "*"|"/"|"div"|"mod"|"and"
+SIGNS           "+"|"-"
+ASSIGN          ":="
+IDENTIFIER      {letter}({letter}|{digit})*
+INT             {digit}+
+DECIMAL         {digit}+"."{digit}+
 
 %%
 
+
+{WHITE_SPACE}   {}
+{NEWLINE}       { lineno++; }
 {RELOPS}        {
                     printf("Flex\t\t\t\t\t\trelop: '%s'\n", yytext);
                     if (strcmp(yytext,"=") == 0) yylval = EQUAL;
@@ -53,54 +58,33 @@ OR "or"
                     //yylval = decodeSignOp(yytext);
                     return SIGN;
                 }
-{ASSIGN}        {
-                    return ASSIGNOP;
-                }
-{NEWLINE}       {
-                    lineno++;
-                }
-{WHITE}         {}
-"or"            {yylval == OR_OP; return OR;}
-"not"           {return NOT;}
-"do"            {return DO;}
-"if"            {
-                    //yylval = symbolTable.insertHolder(IF_HOLDER);
-                    return IF;
-}
-"else"          {return ELSE;}
-"then"          {return THEN;}
-"while"         {
-                    //yylval = symbolTable.insertHolder(WHILE_HOLDER);
-                    return WHILE;
-}
-"var"           {return VAR;}
-".."            {return RANGEOP;}
-"array"         {return ARRAY;}
-"of"            {return OF;}
-
-"integer"       {yylval = INTEGER; return INTEGER;}
-"real"          {yylval = REAL; return REAL;}
-
-"procedure"     {return PROCEDURE;}
-"function"      {return FUNCTION;}
-
-"begin"         {return BEGIN_TOKEN;}
-"end"           {return END_TOKEN;}
-"program"       {return PROGRAM_TOKEN;}
-
-{letter}({letter}|{digit})* {
+{ASSIGN}        { return ASSIGNOP; }
+"program"       { return PROGRAM_TOKEN; }
+"begin"         { return BEGIN_TOKEN; }
+"end"           { return END_TOKEN; }
+"or"            { return OR; }
+"if"            { return IF; }
+"then"          { return THEN; }
+"else"          { return ELSE; }
+"not"           { return NOT; }
+"while"         { return WHILE; }
+"do"            { return DO; }
+"var"           { return VAR; }
+"integer"       { yylval = INTEGER; return INTEGER; }
+"real"          { yylval = REAL; return REAL; }
+"procedure"     { return PROCEDURE; }
+"function"      { return FUNCTION; }
+{IDENTIFIER}    {
                      return lookupOrInstall(ID, -1);
                 }
-{digit}+"."{digit}+ {
-                    lookupOrInstall(NUM, REAL);
-                    return NUM;
-}
-
-{digit}+ {
+{DECIMAL}       {
+                    return lookupOrInstall(NUM, REAL);
+                }
+{INT}           {
                     lookupOrInstall(NUM, INTEGER);
                     printf("flex: found integer: %s\n", yytext);
                     return NUM;
-}
+                }
 .               {return (int) yytext[0];}
 %%
 

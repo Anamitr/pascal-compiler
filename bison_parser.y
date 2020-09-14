@@ -77,7 +77,6 @@ PROGRAM_TOKEN ID '(' identifier_list ')'
 	emitter.emitString("\tjump.i	#lab0");
 	idsTempList.clear();
 }
-
 declarations {isGlobal = false;}
 subprogram_declarations {
 	emitter.writePointerAddresses();

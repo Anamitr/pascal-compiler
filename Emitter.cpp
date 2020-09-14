@@ -98,13 +98,12 @@ void Emitter::emitRead(list<int> callArguments) {
 
 vector<Entry> Emitter::convertToSameType(Entry leftEntry, Entry rightEntry) {
     vector<Entry> result;
+    int conversionCode = INT_TO_REAL;
     if (leftEntry.typeCode == rightEntry.typeCode) {
         cout << "Emitter::convertToSameType\t\t\t" << "entries are the same type!";
     } else if (leftEntry.typeCode == INTEGER && rightEntry.typeCode == REAL) {
-        int conversionCode = INT_TO_REAL;
         leftEntry = generateConversion(conversionCode, leftEntry);
     } else if (leftEntry.typeCode == REAL && rightEntry.typeCode == INTEGER) {
-        int conversionCode = INT_TO_REAL;
         rightEntry = generateConversion(conversionCode, rightEntry);
     }
     result.push_back(leftEntry);

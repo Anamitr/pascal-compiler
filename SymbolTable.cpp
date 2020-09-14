@@ -56,7 +56,7 @@ Entry SymbolTable::allocateTempVarOfType(int typeCode) {
         ids.push_back(p);
         addGlobalVariablesWithType(ids, typeCode);
     } else {
-        entry.typeCode = typeCode;
+        entry.assignType(typeCode);
         entry.isLocal = true;
         int entrySize = Decoder::getVarTypeSize(typeCode);
         this->localMemAllocSize += entrySize;
